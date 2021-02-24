@@ -13,7 +13,7 @@
         "typescript": "^4.2.2"
     },
     "scripts": {
-        "start": "tsc main.ts & node main.js"
+        "start": "tsc main.ts --resolveJsonModule & node main.js"
     },
     "repository": {
         "type": "git",
