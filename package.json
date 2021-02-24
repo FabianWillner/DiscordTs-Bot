@@ -1,25 +1,28 @@
 {
-  "name": "discordjs-bot",
-  "version": "1.0.0",
-  "description": "A simple Javascript Discord Bot",
-  "main": "index.js",
-  "dependencies": {
-    "discord.js": "^12.5.1",
-    "eslint": "^7.20.0",
-    "opusscript": "0.0.8"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Sahneeintopf/DiscordJs-Bot.git"
-  },
-  "author": "Fabian Willner",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Sahneeintopf/DiscordJs-Bot/issues"
-  },
-  "homepage": "https://github.com/Sahneeintopf/DiscordJs-Bot#readme"
+    "name": "discordjs-bot",
+    "version": "1.0.0",
+    "description": "A simple Javascript Discord Bot",
+    "main": "tsc main.ts & main.js",
+    "dependencies": {
+        "discord.js": "^12.5.1",
+        "eslint": "^7.20.0",
+        "opusscript": "0.0.8"
+    },
+    "devDependencies": {
+        "@types/node": "^14.14.31",
+        "typescript": "^4.2.2"
+    },
+    "scripts": {
+        "start": "tsc main.ts & node main.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Sahneeintopf/DiscordJs-Bot.git"
+    },
+    "author": "Fabian Willner",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Sahneeintopf/DiscordJs-Bot/issues"
+    },
+    "homepage": "https://github.com/Sahneeintopf/DiscordJs-Bot#readme"
 }

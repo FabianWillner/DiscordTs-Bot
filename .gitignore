@@ -1,6 +1,9 @@
 # credentials
 credentials.ts
 
+#js files
+*.js
+
 # Logs
 logs
 *.log
