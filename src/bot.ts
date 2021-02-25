@@ -27,53 +27,25 @@ export class Bot {
         }
     }
 
+    private async loadEvents(){
+        const eventFiles = fs.readdirSync('./src/events').filter(file => file.endsWith('.js'));
+        for (const file of eventFiles) {
+            const event = require(`./events/${file}`);
+            if (event.once) {
+                this.client.once(event.name, (...args) => event.execute(...args, this.commands, this.client));
+            } else {
+                this.client.on(event.name, (...args) => event.execute(...args, this.commands, this.client));
+            }
+        }
+    }
+
     private initBot() {
         this.client = new Discord.Client();
         this.commands = new Discord.Collection();
         this.loadCommands();
 
-        this.client.once("ready", () => {
-            console.log("Ready!");
-        });
+        this.loadEvents();
 
-        this.client.on("message", (message) => {
-            if (!message.content.startsWith(prefix) || message.author.bot)
-                return;
-            const args: string[] = message.content
-                .slice(prefix.length)
-                .trim()
-                .split(/ +/);
-            const commandName: string = args.shift().toLowerCase();
-
-            const command =
-                this.commands.get(commandName) ||
-                this.commands.find(
-                    (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
-                );
-            if (!command) return;
-
-            if (command.args && !args.length) {
-                let reply = `You didn't provide any arguments, ${message.author}!`;
-        
-                if (command.usage) {
-                    reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
-                }
-        
-                return message.channel.send(reply);
-            }
-
-
-            try {
-                command.execute(message, args, this.commands);
-            } catch (error) {
-                console.error(error);
-                message.reply(
-                    "there was an error trying to execute that command!"
-                );
-            }
-
-            console.log(message.content);
-        });
         this.login();
     }
 }
