@@ -1,8 +1,10 @@
 import { prefix, token } from "../credentials.json";
-import Discord = require("discord.js");
+import * as Discord from "discord.js";
+import * as fs from "fs";
 
 export class Bot {
     private client: Discord.Client;
+    private commands: Discord.Collection<string, any>;
 
     constructor() {
         this.initBot();
@@ -12,8 +14,24 @@ export class Bot {
         this.client.login(token);
     }
 
+    private async loadCommands() {
+        const commandFolders = fs.readdirSync("./src/commands");
+        for (const folder of commandFolders) {
+            const commandFiles = fs
+                .readdirSync(`./src/commands/${folder}`)
+                .filter((file) => file.endsWith(".js"));
+            for (const file of commandFiles) {
+                const command = require(`./commands/${folder}/${file}`);
+                this.commands.set(command.name, command);
+            }
+        }
+    }
+
     private initBot() {
         this.client = new Discord.Client();
+        this.commands = new Discord.Collection();
+        this.loadCommands();
+
         this.client.once("ready", () => {
             console.log("Ready!");
         });
@@ -21,52 +39,40 @@ export class Bot {
         this.client.on("message", (message) => {
             if (!message.content.startsWith(prefix) || message.author.bot)
                 return;
-            const args = message.content.slice(prefix.length).trim().split(/ +/);
-            const command = args.shift().toLowerCase();
+            const args: string[] = message.content
+                .slice(prefix.length)
+                .trim()
+                .split(/ +/);
+            const commandName: string = args.shift().toLowerCase();
+
+            const command =
+                this.commands.get(commandName) ||
+                this.commands.find(
+                    (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
+                );
+            if (!command) return;
+
+            if (command.args && !args.length) {
+                let reply = `You didn't provide any arguments, ${message.author}!`;
+        
+                if (command.usage) {
+                    reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+                }
+        
+                return message.channel.send(reply);
+            }
+
+
+            try {
+                command.execute(message, args, this.commands);
+            } catch (error) {
+                console.error(error);
+                message.reply(
+                    "there was an error trying to execute that command!"
+                );
+            }
 
             console.log(message.content);
-            switch (command) {
-                case "ping": {
-                    message.channel.send("Pong.");
-                    break;
-                }
-                case "pog": {
-                    const wasweisich = this.client.emojis.cache.find(
-                        (emoji) => emoji.name === "swagtaube"
-                    );
-                    message.channel.send(wasweisich.toString());
-                    break;
-                }
-                case "server": {
-                    message.channel.send(`Server name: ${message.guild.name}\n
-                        Total members: ${message.guild.memberCount}`);
-                    break;
-                }
-                case "kick": {
-                    if (!message.mentions.users.size) {
-                        message.reply('you need to tag a user in order to kick them!');
-                        break;
-                    }
-                    const taggedUser = message.mentions.users.first();
-
-	                message.channel.send(`You wanted to kick: ${taggedUser.username}`);
-                    break;
-                }
-                case "avatar": {
-                    if (!message.mentions.users.size) {
-                        message.channel.send(`Your avatar: <${message.author.displayAvatarURL({ format: "png", dynamic: true })}>`);
-                        break;
-                    }
-                    const avatarList = message.mentions.users.map(user => {
-                        return `${user.username}'s avatar: <${user.displayAvatarURL({ format: "png", dynamic: true })}>`;
-                    });
-                
-                    // send the entire array of strings as a message
-                    // by default, discord.js will `.join()` the array with `\n`
-                    message.channel.send(avatarList);
-                    break;
-                }
-            }
         });
         this.login();
     }
