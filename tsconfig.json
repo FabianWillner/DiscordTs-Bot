@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "preserveConstEnums": true,
+        "resolveJsonModule": true
+    },
+    "include": ["src/**/*", "main.ts"],
+    "exclude": ["node_modules", "**/*.spec.ts"]
+}
