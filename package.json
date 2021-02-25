@@ -6,7 +6,9 @@
     "dependencies": {
         "discord.js": "^12.5.1",
         "eslint": "^7.20.0",
-        "opusscript": "0.0.8"
+        "ffmpeg-static": "^4.2.7",
+        "opusscript": "0.0.8",
+        "ytdl-core": "^4.5.0"
     },
     "devDependencies": {
         "@tsconfig/node14": "^1.0.0",
