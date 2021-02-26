@@ -1,11 +1,14 @@
 import fs = require("fs");
+import { argumentWrapper } from "../../interfaces/wrapperObject";
+import * as Discord from "discord.js";
 
 module.exports = {
     name: "reload",
     description: "Reloads a command",
     args: true,
-    execute(message, args, commands) {
-        const commandName = args[0].toLowerCase();
+    execute(message: Discord.Message, context: argumentWrapper) {
+        const { args, commands } = context;
+        const commandName: string = args[0].toLowerCase();
         const command =
             commands.get(commandName) ||
             commands.find(
@@ -18,15 +21,16 @@ module.exports = {
             );
         }
 
-        const commandFolders = fs.readdirSync("./src/commands");
-        const folderName = commandFolders.find((folder) =>
+        const commandFolders: string[] = fs.readdirSync("./src/commands");
+        const folderName: string = commandFolders.find((folder) =>
             fs
                 .readdirSync(`./src/commands/${folder}`)
                 .includes(`${commandName}.ts`)
         );
 
+        // execute a cmd command
         const {execSync} = require('child_process');
-        let output = execSync(`tsc ${__dirname}\\..\\${folderName}\\${command.name}.ts`);
+        execSync(`tsc ${__dirname}\\..\\${folderName}\\${command.name}.ts`);
 
 
         delete require.cache[

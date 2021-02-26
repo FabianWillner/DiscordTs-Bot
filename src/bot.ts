@@ -1,10 +1,12 @@
-import { prefix, token } from "../credentials.json";
+import { token } from "../credentials.json";
 import * as Discord from "discord.js";
 import * as fs from "fs";
+import { argumentWrapper } from "./interfaces/wrapperObject";
+import { command } from "./interfaces/command";
 
 export class Bot {
     private client: Discord.Client;
-    private commands: Discord.Collection<string, any>;
+    private commands: Discord.Collection<string, command>;
 
     constructor() {
         this.initBot();
@@ -28,13 +30,14 @@ export class Bot {
     }
 
     private async loadEvents(){
+        const context: argumentWrapper = {commands: this.commands, client: this.client};
         const eventFiles = fs.readdirSync('./src/events').filter(file => file.endsWith('.js'));
         for (const file of eventFiles) {
             const event = require(`./events/${file}`);
             if (event.once) {
-                this.client.once(event.name, (...args) => event.execute(...args, this.commands, this.client));
+                this.client.once(event.name, (...args) => event.execute(...args, context));
             } else {
-                this.client.on(event.name, (...args) => event.execute(...args, this.commands, this.client));
+                this.client.on(event.name, (...args) => event.execute(...args, context));
             }
         }
     }
