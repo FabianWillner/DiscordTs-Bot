@@ -5,7 +5,10 @@ import { argumentWrapper } from "../interfaces/wrapperObject";
 module.exports = {
     name: "message",
     execute(message: Discord.Message, context: argumentWrapper) {
+        const { logger } = context;
+        
         if (!message.content.startsWith(prefix) || message.author.bot) return;
+        logger.log("info", `${message.author.username}: ${message.cleanContent}`);
         const args: string[] = message.content
             .slice(prefix.length)
             .trim()
@@ -19,6 +22,7 @@ module.exports = {
                 (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
             );
         if (!command) return;
+        logger.log("debug", `${message.author.username}: used ${commandName}`);
 
         if (command.args && !args.length) {
             let reply = `You didn't provide any arguments, ${message.author}!`;
@@ -33,10 +37,9 @@ module.exports = {
         try {
             command.execute(message, context);
         } catch (error) {
-            console.error(error);
+            logger.log("error", `the message ${message.content} has thrown: ${error}`);
+            //console.error(error);
             message.reply("there was an error trying to execute that command!");
         }
-
-        console.log(message.content);
     },
 };
