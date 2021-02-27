@@ -8,21 +8,21 @@ module.exports = {
     aliases: ["yt", "play"],
     description: "Plays music from youtube",
     execute(message: Discord.Message, context: argumentWrapper) {
-        const { args } = context;
+        const { args, youtubePlayer } = context;
         const voiceChannel: Discord.VoiceChannel = message.member.voice.channel;
         if (!voiceChannel) {
             return;
         }
 
-        voiceChannel.join().then((connection) => {
+        if (args[0] === "stop"){
+            youtubePlayer.stop(voiceChannel);
+        }else {
             try {
-                const stream = ytdl(args[0], { filter: "audioonly" });
-                const dispatcher = connection.play(stream);
-                //dispatcher.on("finish", () => voiceChannel.leave());
+                youtubePlayer.add(args[0], voiceChannel);
             } catch (error) {
                 console.error();
                 message.reply("there was an error trying to play that song!");
             }
-        });
+        }
     },
 };
