@@ -14,13 +14,13 @@ module.exports = {
             return;
         }
 
-        if (args[0] === "stop"){
+        if (args[0] === "stop") {
             youtubePlayer.stop(voiceChannel);
-        } else if (args[0] === "pause"){
+        } else if (args[0] === "pause") {
             youtubePlayer.pause(voiceChannel);
-        } else if (args[0] === "skip"){
+        } else if (args[0] === "skip") {
             youtubePlayer.skip(voiceChannel);
-        } else if (args[0] === "resume"){
+        } else if (args[0] === "resume") {
             youtubePlayer.resume(voiceChannel);
         } else {
             try {

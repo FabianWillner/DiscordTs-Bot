@@ -29,9 +29,8 @@ module.exports = {
         );
 
         // execute a cmd command
-        const {execSync} = require('child_process');
+        const { execSync } = require("child_process");
         execSync(`tsc ${__dirname}\\..\\${folderName}\\${command.name}.ts`);
-
 
         delete require.cache[
             require.resolve(`../${folderName}/${command.name}.js`)

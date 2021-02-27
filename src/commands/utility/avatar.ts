@@ -3,7 +3,7 @@ import * as Discord from "discord.js";
 
 module.exports = {
     name: "avatar",
-    aliases: ['icon', 'pfp'],
+    aliases: ["icon", "pfp"],
     description:
         "Shows the users avatar, use @Username to show the avatar of the User",
     execute(message: Discord.Message, context: argumentWrapper) {

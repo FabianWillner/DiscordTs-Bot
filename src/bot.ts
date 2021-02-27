@@ -9,11 +9,11 @@ export class Bot {
     private commands: Discord.Collection<string, command>;
     private youtubePlayer: YoutubePlayer;
 
-    constructor(token:string) {
+    constructor(token: string) {
         this.initBot(token);
     }
 
-    private login(token:string) {
+    private login(token: string) {
         this.client.login(token);
     }
 
@@ -53,7 +53,7 @@ export class Bot {
         }
     }
 
-    private initBot(token:string) {
+    private initBot(token: string) {
         this.client = new Discord.Client();
         this.commands = new Discord.Collection();
         this.youtubePlayer = new YoutubePlayer();

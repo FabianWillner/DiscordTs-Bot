@@ -1,4 +1,3 @@
-import { Console } from "node:console";
 import { prefix } from "../../credentials.json";
 import * as Discord from "discord.js";
 import { argumentWrapper } from "../interfaces/wrapperObject";
@@ -13,7 +12,7 @@ module.exports = {
             .split(/ +/);
         context.args = args;
         const commandName: string = args.shift().toLowerCase();
-        const {commands} = context;
+        const { commands } = context;
         const command =
             commands.get(commandName) ||
             commands.find(

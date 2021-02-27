@@ -3,8 +3,8 @@ import { YoutubePlayer } from "../youtubePlayer";
 import { command } from "./command";
 
 export interface argumentWrapper {
-    commands: Discord.Collection<string,command>,
-    client: Discord.Client,
-    youtubePlayer: YoutubePlayer,
-    args?: string[]
+    commands: Discord.Collection<string, command>;
+    client: Discord.Client;
+    youtubePlayer: YoutubePlayer;
+    args?: string[];
 }

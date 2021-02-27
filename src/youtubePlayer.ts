@@ -2,15 +2,12 @@ import * as Discord from "discord.js";
 import ytdl = require("ytdl-core");
 
 export class YoutubePlayer {
+    constructor() {}
 
-    constructor(){
+    private map = new Map<Discord.VoiceChannel, youtubePlayerInstance>();
 
-    }
-
-    private map = new Map<Discord.VoiceChannel, youtubePlayerInstance>();    
-
-    public add(link: string, voiceChannel: Discord.VoiceChannel){
-        if (this.map.has(voiceChannel)){
+    public add(link: string, voiceChannel: Discord.VoiceChannel) {
+        if (this.map.has(voiceChannel)) {
             this.map.get(voiceChannel).add(link);
         } else {
             this.map.set(voiceChannel, new youtubePlayerInstance(voiceChannel));
@@ -18,34 +15,32 @@ export class YoutubePlayer {
         }
     }
 
-    public stop(voiceChannel: Discord.VoiceChannel){
-        if (this.map.has(voiceChannel)){
+    public stop(voiceChannel: Discord.VoiceChannel) {
+        if (this.map.has(voiceChannel)) {
             this.map.get(voiceChannel).stop();
         }
     }
 
-    public pause(voiceChannel: Discord.VoiceChannel){
-        if (this.map.has(voiceChannel)){
+    public pause(voiceChannel: Discord.VoiceChannel) {
+        if (this.map.has(voiceChannel)) {
             this.map.get(voiceChannel).pause();
         }
     }
 
-    public resume(voiceChannel: Discord.VoiceChannel){
-        if (this.map.has(voiceChannel)){
+    public resume(voiceChannel: Discord.VoiceChannel) {
+        if (this.map.has(voiceChannel)) {
             this.map.get(voiceChannel).resume();
         }
     }
 
-    public skip(voiceChannel: Discord.VoiceChannel){
-        if (this.map.has(voiceChannel)){
+    public skip(voiceChannel: Discord.VoiceChannel) {
+        if (this.map.has(voiceChannel)) {
             this.map.get(voiceChannel).skip();
         }
     }
-
 }
 
 class youtubePlayerInstance {
-
     private channel: Discord.VoiceChannel;
     private queue: string[] = [];
     private playing: boolean = false;
@@ -56,69 +51,71 @@ class youtubePlayerInstance {
         this.channel = voiceChannel;
     }
 
-    public add(link: string){
-        if (this.queue.push(link) == 1){
+    public add(link: string) {
+        if (this.queue.push(link) == 1) {
             this.play();
         }
     }
 
-    public pause(){
-        if (!this.paused){
+    public pause() {
+        if (!this.paused) {
             this.dispatcher.pause();
             this.paused = true;
         }
     }
 
-    public resume(){
-        if (this.paused){
+    public resume() {
+        if (this.paused) {
             this.dispatcher.resume();
             this.paused = false;
         }
     }
 
-    public skip(){
-        if (this.playing){
+    public skip() {
+        if (this.playing) {
             this.playing = false;
             this.dispatcher.end();
             this.play();
         }
     }
 
-    public stop(){
+    public stop() {
         this.playing = false;
         this.queue = [];
         this.dispatcher.end();
     }
 
-    private play(){
-        if (!this.playing && this.queue.length > 0){
-            this.channel.join().then((connection) =>{
+    private play() {
+        if (!this.playing && this.queue.length > 0) {
+            this.channel.join().then((connection) => {
                 this.playing = true;
                 try {
-                    const stream = ytdl(this.queue.shift(), { filter: "audioonly" });
+                    const stream = ytdl(this.queue.shift(), {
+                        filter: "audioonly",
+                    });
                     this.dispatcher = connection.play(stream);
                     this.dispatcher.on("start", () => (this.playing = true));
                     this.dispatcher.on("finish", () => this.songFinished());
                     this.dispatcher.on("close", () => this.songFinished());
-                } catch (error){
+                } catch (error) {
                     console.error();
                 }
-            })
+            });
         }
     }
 
-    private songFinished(){
+    private songFinished() {
         this.playing = false;
-        if (this.queue.length > 0){
+        if (this.queue.length > 0) {
             this.play();
         } else {
             setTimeout(() => this.shouldDisconnect(), 300000);
         }
     }
 
-    private shouldDisconnect(){
+    private shouldDisconnect() {
         if (this.queue.length == 0 && !this.playing) {
-            this.channel.leave()
+            this.channel.leave();
         }
     }
 }
