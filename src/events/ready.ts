@@ -8,5 +8,6 @@ module.exports = {
 		console.log('Ready!');
         client.user.setActivity('YOU!!!', { type: 'WATCHING' });
         //client.user.setStatus('dnd');
+		//client.user.setStatus('invisible');
 	},
 };
