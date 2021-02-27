@@ -59,10 +59,10 @@ export class Bot {
     private initBot(token: string) {
         this.client = new Discord.Client();
         this.commands = new Discord.Collection();
-        this.youtubePlayer = new YoutubePlayer(this.logger);
 
+        this.login(token);
+        this.youtubePlayer = new YoutubePlayer(this.logger);
         this.loadCommands();
         this.loadEvents();
-        this.login(token);
     }
 }

@@ -6,9 +6,12 @@ module.exports = {
     name: "message",
     execute(message: Discord.Message, context: argumentWrapper) {
         const { logger } = context;
-        
+
         if (!message.content.startsWith(prefix) || message.author.bot) return;
-        logger.log("info", `${message.author.username}: ${message.cleanContent}`);
+        logger.log(
+            "info",
+            `${message.author.username}: ${message.cleanContent}`
+        );
         const args: string[] = message.content
             .slice(prefix.length)
             .trim()
@@ -37,7 +40,10 @@ module.exports = {
         try {
             command.execute(message, context);
         } catch (error) {
-            logger.log("error", `the message ${message.content} has thrown: ${error}`);
+            logger.log(
+                "error",
+                `the message ${message.content} has thrown: ${error}`
+            );
             //console.error(error);
             message.reply("there was an error trying to execute that command!");
         }

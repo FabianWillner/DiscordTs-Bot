@@ -9,132 +9,131 @@ export class YoutubePlayer {
         this.logger = logger;
     }
 
-    private map = new Map<Discord.VoiceChannel, youtubePlayerInstance>();
+    private map = new Map<string, youtubePlayerInstance>();
 
     public add(link: string, voiceChannel: Discord.VoiceChannel) {
-        if (this.map.has(voiceChannel)) {
-            this.map.get(voiceChannel).add(link);
-        } else {
-            this.map.set(
-                voiceChannel,
-                new youtubePlayerInstance(voiceChannel, this.logger)
-            );
-            this.map.get(voiceChannel).add(link);
+        const guildId = voiceChannel.guild.id;
+        if (!this.map.has(guildId)) {
+            this.map.set(guildId, new youtubePlayerInstance(this.logger));
         }
+        this.map.get(guildId).add(link, voiceChannel);
     }
 
-    public stop(voiceChannel: Discord.VoiceChannel) {
-        if (this.map.has(voiceChannel)) {
-            this.map.get(voiceChannel).stop();
-        }
+    public stop(guildId: string) {
+        this.map.get(guildId)?.stop();
     }
 
-    public pause(voiceChannel: Discord.VoiceChannel) {
-        if (this.map.has(voiceChannel)) {
-            this.map.get(voiceChannel).pause();
-        }
+    public pause(guildId: string) {
+        this.map.get(guildId)?.pause();
     }
 
-    public resume(voiceChannel: Discord.VoiceChannel) {
-        if (this.map.has(voiceChannel)) {
-            this.map.get(voiceChannel).resume();
-        }
+    public resume(guildId: string) {
+        this.map.get(guildId)?.resume();
     }
 
-    public skip(voiceChannel: Discord.VoiceChannel) {
-        if (this.map.has(voiceChannel)) {
-            this.map.get(voiceChannel).skip();
-        }
+    public skip(guildId: string) {
+        this.map.get(guildId)?.skip();
     }
 }
 
 class youtubePlayerInstance {
-    private channel: Discord.VoiceChannel;
+    private connection: Discord.VoiceConnection;
     private queue: string[] = [];
     private playing: boolean = false;
-    private dispatcher: Discord.StreamDispatcher;
     private paused: boolean = false;
     private logger: Winston.Logger;
+    private timer: NodeJS.Timeout;
+    private once: boolean;
 
-    constructor(voiceChannel: Discord.VoiceChannel, logger: Winston.Logger) {
-        this.channel = voiceChannel;
+    constructor(logger: Winston.Logger) {
+        this.once = true;
         this.logger = logger;
     }
 
-    public add(link: string) {
-        this.logger.log("info", `Adding song to queue`);
+    public async joinVC(voiceChannel: Discord.VoiceChannel) {
+        if (
+            !voiceChannel.members.has(
+                voiceChannel.guild.members.client.user.id
+            ) ||
+            this.once
+        ) {
+            this.connection = await voiceChannel.join();
+            this.timer = setTimeout(this.connection.channel.leave, 300000);
+            this.once = false;
+        }
+    }
+
+    public async add(link: string, voiceChannel: Discord.VoiceChannel) {
+        //this.logger.log("info", `Adding song to queue`);
         if (this.queue.push(link) == 1) {
-            this.play();
+            await this.play(voiceChannel);
         }
     }
 
     public pause() {
         if (!this.paused) {
-            this.logger.log("info", `Pause song`);
-            this.dispatcher.pause();
+            //this.logger.log("info", `Pause song`);
+            this.timer = setTimeout(this.connection.channel.leave, 300000);
+            this.connection.dispatcher.pause();
             this.paused = true;
         }
     }
 
     public resume() {
         if (this.paused) {
-            this.logger.log("info", `Resuming song`);
-            this.dispatcher.resume();
+            //this.logger.log("info", `Resuming song`);
+            this.connection.dispatcher.resume();
+            clearTimeout(this.timer);
             this.paused = false;
         }
     }
 
     public skip() {
         if (this.playing) {
-            this.logger.log("info", `Skipping song`);
+            //this.logger.log("info", `Skipping song`);
             this.playing = false;
-            this.dispatcher.end();
-            this.play();
+            this.connection.dispatcher.end();
+            this.paused = false;
+            //this.play(this.connection.channel);
         }
     }
 
     public stop() {
-        this.logger.log("info", `Stop playing songs`);
+        //this.logger.log("info", `Stop playing songs`);
         this.playing = false;
         this.queue = [];
-        this.dispatcher.end();
+        this.connection.dispatcher.end();
+        this.songFinished();
     }
 
-    private play() {
-        if (!this.playing && this.queue.length > 0) {
-            this.channel.join().then((connection) => {
-                this.playing = true;
-                try {
-                    const link = this.queue.shift();
-                    this.logger.log("info", `Start playing: ${link}`);
-                    const stream = ytdl(link, {
-                        filter: "audioonly",
-                    });
-                    this.dispatcher = connection.play(stream);
-                    this.dispatcher.on("start", () => (this.playing = true));
-                    this.dispatcher.on("finish", () => this.songFinished());
-                    this.dispatcher.on("close", () => this.songFinished());
-                } catch (error) {
-                    this.logger.log("error", `${error}`);
-                    //console.error();
-                }
-            });
+    private async play(voiceChannel: Discord.VoiceChannel) {
+        if (!this.playing && this.queue.length > 0 && !this.paused) {
+            await this.joinVC(voiceChannel);
+            this.playing = true;
+            try {
+                clearTimeout(this.timer);
+                const link = this.queue.shift();
+                //this.logger.log("info", `Start playing: ${link}`);
+                const stream = ytdl(link, {
+                    filter: "audioonly",
+                });
+                const dispatcher = this.connection.play(stream);
+                dispatcher.on("finish", () => this.songFinished());
+                //dispatcher.on("close", () => this.songFinished());
+            } catch (error) {
+                //this.logger.log("error", `${error}`);
+                console.error(error);
+                this.playing = false;
+            }
         }
     }
 
     private songFinished() {
         this.playing = false;
         if (this.queue.length > 0) {
-            this.play();
+            this.play(this.connection.channel);
         } else {
-            setTimeout(() => this.shouldDisconnect(), 300000);
-        }
-    }
-
-    private shouldDisconnect() {
-        if (this.queue.length == 0 && !this.playing) {
-            this.logger.log("debug", `Disconnected from voice due timeout`);
-            this.channel.leave();
+            this.timer = setTimeout(this.connection.channel.leave, 300000);
         }
     }
 }
