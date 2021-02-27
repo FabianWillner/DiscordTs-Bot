@@ -58,6 +58,7 @@ class youtubePlayerInstance {
             this.once
         ) {
             this.connection = await voiceChannel.join();
+            clearTimeout(this.timer);
             this.timer = setTimeout(this.connection.channel.leave, 300000);
             this.once = false;
         }
@@ -73,6 +74,7 @@ class youtubePlayerInstance {
     public pause() {
         if (!this.paused) {
             //this.logger.log("info", `Pause song`);
+            clearTimeout(this.timer);
             this.timer = setTimeout(this.connection.channel.leave, 300000);
             this.connection.dispatcher.pause();
             this.paused = true;
@@ -133,6 +135,7 @@ class youtubePlayerInstance {
         if (this.queue.length > 0) {
             this.play(this.connection.channel);
         } else {
+            clearTimeout(this.timer);
             this.timer = setTimeout(this.connection.channel.leave, 300000);
         }
     }
