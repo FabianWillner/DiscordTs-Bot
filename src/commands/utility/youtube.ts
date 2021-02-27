@@ -16,33 +16,35 @@ module.exports = {
             return;
         }
 
-        switch(args[0]){
-            case "stop": { 
+        switch (args[0]) {
+            case "stop": {
                 youtubePlayer.stop(guildId);
-                break; 
-             } 
-             case "pause": { 
+                break;
+            }
+            case "pause": {
                 youtubePlayer.pause(guildId);
-                break; 
-             } 
-             case "skip": { 
+                break;
+            }
+            case "skip": {
                 youtubePlayer.skip(guildId);
-                break; 
-             } 
-             case "resume": { 
+                break;
+            }
+            case "resume": {
                 youtubePlayer.resume(guildId);
-                break; 
-             } 
-             default: { 
+                break;
+            }
+            default: {
                 try {
                     youtubePlayer.add(args[0], voiceChannel);
                 } catch (error) {
                     logger.log("error", `${error}`);
                     //console.error();
-                    message.reply("there was an error trying to play that song!");
+                    message.reply(
+                        "there was an error trying to play that song!"
+                    );
                 }
-                break; 
-             } 
+                break;
+            }
         }
     },
 };
