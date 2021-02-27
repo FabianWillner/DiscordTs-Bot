@@ -24,6 +24,24 @@ export class YoutubePlayer {
         }
     }
 
+    public pause(voiceChannel: Discord.VoiceChannel){
+        if (this.map.has(voiceChannel)){
+            this.map.get(voiceChannel).pause();
+        }
+    }
+
+    public resume(voiceChannel: Discord.VoiceChannel){
+        if (this.map.has(voiceChannel)){
+            this.map.get(voiceChannel).resume();
+        }
+    }
+
+    public skip(voiceChannel: Discord.VoiceChannel){
+        if (this.map.has(voiceChannel)){
+            this.map.get(voiceChannel).skip();
+        }
+    }
+
 }
 
 class youtubePlayerInstance {
@@ -32,6 +50,7 @@ class youtubePlayerInstance {
     private queue: string[] = [];
     private playing: boolean = false;
     private dispatcher: Discord.StreamDispatcher;
+    private paused: boolean = false;
 
     constructor(voiceChannel: Discord.VoiceChannel) {
         this.channel = voiceChannel;
@@ -43,9 +62,32 @@ class youtubePlayerInstance {
         }
     }
 
+    public pause(){
+        if (!this.paused){
+            this.dispatcher.pause();
+            this.paused = true;
+        }
+    }
+
+    public resume(){
+        if (this.paused){
+            this.dispatcher.resume();
+            this.paused = false;
+        }
+    }
+
+    public skip(){
+        if (this.playing){
+            this.playing = false;
+            this.dispatcher.end();
+            this.play();
+        }
+    }
+
     public stop(){
-        this.dispatcher.end();
+        this.playing = false;
         this.queue = [];
+        this.dispatcher.end();
     }
 
     private play(){
@@ -63,8 +105,6 @@ class youtubePlayerInstance {
                 }
             })
         }
-
-        
     }
 
     private songFinished(){

@@ -16,7 +16,13 @@ module.exports = {
 
         if (args[0] === "stop"){
             youtubePlayer.stop(voiceChannel);
-        }else {
+        } else if (args[0] === "pause"){
+            youtubePlayer.pause(voiceChannel);
+        } else if (args[0] === "skip"){
+            youtubePlayer.skip(voiceChannel);
+        } else if (args[0] === "resume"){
+            youtubePlayer.resume(voiceChannel);
+        } else {
             try {
                 youtubePlayer.add(args[0], voiceChannel);
             } catch (error) {
