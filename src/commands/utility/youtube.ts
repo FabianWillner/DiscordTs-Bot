@@ -8,7 +8,8 @@ module.exports = {
     aliases: ["yt", "play"],
     description: "Plays music from youtube",
     execute(message: Discord.Message, context: argumentWrapper) {
-        const { args, youtubePlayer } = context;
+        const { args, youtubePlayer, logger } = context;
+
         const voiceChannel: Discord.VoiceChannel = message.member.voice.channel;
         if (!voiceChannel) {
             return;
@@ -26,7 +27,8 @@ module.exports = {
             try {
                 youtubePlayer.add(args[0], voiceChannel);
             } catch (error) {
-                console.error();
+                logger.log("error", `${error}`);
+                //console.error();
                 message.reply("there was an error trying to play that song!");
             }
         }

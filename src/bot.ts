@@ -3,11 +3,13 @@ import * as fs from "fs";
 import { argumentWrapper } from "./interfaces/wrapperObject";
 import { command } from "./interfaces/command";
 import { YoutubePlayer } from "./youtubePlayer";
+import * as Winston from "winston";
 
 export class Bot {
     private client: Discord.Client;
     private commands: Discord.Collection<string, command>;
     private youtubePlayer: YoutubePlayer;
+    private logger: Winston.Logger;
 
     constructor(token: string) {
         this.initBot(token);
@@ -35,6 +37,7 @@ export class Bot {
             commands: this.commands,
             client: this.client,
             youtubePlayer: this.youtubePlayer,
+            logger: this.logger,
         };
         const eventFiles = fs
             .readdirSync("./src/events")
@@ -56,11 +59,10 @@ export class Bot {
     private initBot(token: string) {
         this.client = new Discord.Client();
         this.commands = new Discord.Collection();
-        this.youtubePlayer = new YoutubePlayer();
+        this.youtubePlayer = new YoutubePlayer(this.logger);
+
         this.loadCommands();
-
         this.loadEvents();
-
         this.login(token);
     }
 }
