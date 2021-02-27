@@ -1,4 +1,3 @@
-import { token } from "../credentials.json";
 import * as Discord from "discord.js";
 import * as fs from "fs";
 import { argumentWrapper } from "./interfaces/wrapperObject";
@@ -10,11 +9,11 @@ export class Bot {
     private commands: Discord.Collection<string, command>;
     private youtubePlayer: YoutubePlayer;
 
-    constructor() {
-        this.initBot();
+    constructor(token:string) {
+        this.initBot(token);
     }
 
-    private login() {
+    private login(token:string) {
         this.client.login(token);
     }
 
@@ -54,7 +53,7 @@ export class Bot {
         }
     }
 
-    private initBot() {
+    private initBot(token:string) {
         this.client = new Discord.Client();
         this.commands = new Discord.Collection();
         this.youtubePlayer = new YoutubePlayer();
@@ -62,6 +61,6 @@ export class Bot {
 
         this.loadEvents();
 
-        this.login();
+        this.login(token);
     }
 }

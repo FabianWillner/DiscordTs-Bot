@@ -1,3 +1,9 @@
+# vscode stuff
+.vscode/
+
+#test file for testing
+testMain.ts
+
 # credentials
 credentials.json
 

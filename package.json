@@ -16,7 +16,8 @@
         "typescript": "^4.2.2"
     },
     "scripts": {
-        "start": "tsc & node main.js"
+        "start": "tsc & node main.js",
+        "dev": "tsc & node testMain.js"
     },
     "repository": {
         "type": "git",
