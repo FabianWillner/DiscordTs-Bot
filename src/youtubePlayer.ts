@@ -77,7 +77,7 @@ class youtubePlayerInstance {
     }
 
     private shouldDisconnect(){
-        if (this.queue.length == 0) {
+        if (this.queue.length == 0 && !this.playing) {
             this.channel.leave()
         }
     }
