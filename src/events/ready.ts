@@ -29,9 +29,9 @@ module.exports = {
                     }),
                     Winston.format.printf(
                         (log) =>
-                            `[${log.level.toUpperCase()}]\t[${log.timestamp}] [${
-                                client.user.username
-                            }] - ${log.message}`
+                            `[${log.level.toUpperCase()}]\t[${
+                                log.timestamp
+                            }] [${client.user.username}] - ${log.message}`
                     )
                 ),
             });
