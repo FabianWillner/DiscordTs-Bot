@@ -51,6 +51,7 @@ class youtubePlayerInstance {
             ) ||
             this.once
         ) {
+            logger.log("debug", "Join VC");
             this.connection = await voiceChannel.join();
             this.setTimer();
             this.once = false;
@@ -92,7 +93,7 @@ class youtubePlayerInstance {
     }
 
     public stop() {
-        //this.logger.log("info", `Stop playing songs`);
+        logger.log("info", `Stop playing songs`);
         this.playing = false;
         this.queue = [];
         this.connection.dispatcher.end();
@@ -122,6 +123,7 @@ class youtubePlayerInstance {
 
     private songFinished() {
         this.playing = false;
+        logger.log("debug", "Song finished");
         if (this.queue.length > 0) {
             this.play(this.connection.channel);
         } else {
@@ -130,6 +132,7 @@ class youtubePlayerInstance {
     }
 
     private leaveChanel() {
+        logger.log("debug", "Leave VC");
         this.connection.channel.leave();
         clearTimeout(this.timer);
     }
