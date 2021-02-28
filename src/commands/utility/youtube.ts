@@ -1,6 +1,7 @@
 import ytdl = require("ytdl-core");
 import * as Discord from "discord.js";
 import { argumentWrapper } from "../../interfaces/wrapperObject";
+import { logger } from "../../logger/logger";
 
 module.exports = {
     name: "youtube",
@@ -8,7 +9,7 @@ module.exports = {
     aliases: ["yt", "play"],
     description: "Plays music from youtube",
     execute(message: Discord.Message, context: argumentWrapper) {
-        const { args, youtubePlayer, logger } = context;
+        const { args, youtubePlayer } = context;
 
         const voiceChannel: Discord.VoiceChannel = message.member.voice.channel;
         const guildId: string = message.guild.id;

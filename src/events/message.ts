@@ -1,12 +1,11 @@
 import { prefix } from "../../credentials.json";
 import * as Discord from "discord.js";
 import { argumentWrapper } from "../interfaces/wrapperObject";
+import { logger } from "../logger/logger";
 
 module.exports = {
     name: "message",
     execute(message: Discord.Message, context: argumentWrapper) {
-        const { logger } = context;
-
         if (!message.content.startsWith(prefix) || message.author.bot) return;
         logger.log(
             "info",
