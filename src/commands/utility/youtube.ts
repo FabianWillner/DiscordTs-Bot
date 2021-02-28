@@ -10,7 +10,7 @@ module.exports = {
     aliases: ["yt", "play"],
     description: "Plays music from youtube",
     execute(message: Discord.Message, context: argumentWrapper) {
-        const { args} = context;
+        const { args } = context;
 
         const voiceChannel: Discord.VoiceChannel = message.member.voice.channel;
         const guildId: string = message.guild.id;

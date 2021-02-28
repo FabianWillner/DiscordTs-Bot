@@ -1,6 +1,6 @@
 import * as Discord from "discord.js";
 import ytdl = require("ytdl-core");
-import {youtubePlayerVCInstance} from "./youtubePlayerVCInstantce"
+import { youtubePlayerVCInstance } from "./youtubePlayerVCInstantce";
 import { logger } from "../logger/logger";
 
 class YoutubePlayer {
@@ -33,7 +33,5 @@ class YoutubePlayer {
         this.map.get(guildId)?.skip();
     }
 }
-
-
 
 export const youtubePlayer = new YoutubePlayer();
