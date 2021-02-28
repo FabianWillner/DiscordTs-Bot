@@ -58,14 +58,14 @@ class youtubePlayerInstance {
             this.once
         ) {
             this.connection = await voiceChannel.join();
-            //this.setTimer();
+            this.setTimer();
             this.once = false;
         }
     }
 
     public async add(link: string, voiceChannel: Discord.VoiceChannel) {
         //this.logger.log("info", `Adding song to queue`);
-        if (this.queue.push(link) == 1) {
+        if (this.queue.push(link) == 1 && !this.playing) {
             await this.play(voiceChannel);
         }
     }
@@ -92,9 +92,8 @@ class youtubePlayerInstance {
         if (this.playing) {
             //this.logger.log("info", `Skipping song`);
             this.playing = false;
-            this.connection.dispatcher.end();
             this.paused = false;
-            //this.play(this.connection.channel);
+            this.connection.dispatcher.end();
         }
     }
 
@@ -103,11 +102,10 @@ class youtubePlayerInstance {
         this.playing = false;
         this.queue = [];
         this.connection.dispatcher.end();
-        this.songFinished();
     }
 
     private async play(voiceChannel: Discord.VoiceChannel) {
-        if (!this.playing && this.queue.length > 0 && !this.paused) {
+        if (!this.playing && this.queue.length > 0) {
             await this.joinVC(voiceChannel);
             this.playing = true;
             try {
@@ -133,18 +131,17 @@ class youtubePlayerInstance {
         if (this.queue.length > 0) {
             this.play(this.connection.channel);
         } else {
-            //this.setTimer();
+            this.setTimer();
         }
     }
 
     private leaveChanel(){
         this.connection.channel.leave();
-        this.connection = null;
         clearTimeout(this.timer);
     }
 
     private setTimer(){
         clearTimeout(this.timer);
-        this.timer = setTimeout(this.leaveChanel, 300000);
+        this.timer = setTimeout(() => this.leaveChanel(), 300000);
     }
 }
