@@ -1,7 +1,7 @@
 import ytdl = require("ytdl-core");
 import * as Discord from "discord.js";
 import { argumentWrapper } from "../../interfaces/wrapperObject";
-import {logger} from "../../logger/logger"
+import { logger } from "../../logger/logger";
 
 module.exports = {
     name: "youtube",

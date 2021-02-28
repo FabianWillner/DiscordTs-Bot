@@ -1,5 +1,5 @@
 import { argumentWrapper } from "../interfaces/wrapperObject";
-import { logger } from "../logger/logger"
+import { logger } from "../logger/logger";
 
 module.exports = {
     name: "ready",

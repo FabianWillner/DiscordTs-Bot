@@ -1,12 +1,9 @@
 import * as Discord from "discord.js";
 import ytdl = require("ytdl-core");
-import {logger} from "./logger/logger"
+import { logger } from "./logger/logger";
 
 export class YoutubePlayer {
-
-    constructor() {
-
-    }
+    constructor() {}
 
     private map = new Map<string, youtubePlayerInstance>();
 
@@ -132,12 +129,12 @@ class youtubePlayerInstance {
         }
     }
 
-    private leaveChanel(){
+    private leaveChanel() {
         this.connection.channel.leave();
         clearTimeout(this.timer);
     }
 
-    private setTimer(){
+    private setTimer() {
         clearTimeout(this.timer);
         this.timer = setTimeout(() => this.leaveChanel(), 300000);
     }

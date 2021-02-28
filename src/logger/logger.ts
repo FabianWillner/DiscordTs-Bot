@@ -2,15 +2,12 @@ import { Console } from "node:console";
 import * as Winston from "winston";
 
 class Logger {
-
     private logger: Winston.Logger;
 
-    constructor(){
+    constructor() {}
 
-    }
-
-    public initializeLogger(name: String){
-        if (this.logger === undefined){
+    public initializeLogger(name: String) {
+        if (this.logger === undefined) {
             this.logger = Winston.createLogger({
                 transports: [
                     new Winston.transports.Console(),
@@ -41,8 +38,8 @@ class Logger {
         }
     }
 
-    public log(level: string, message: string){
-        if (!(this.logger === undefined)){
+    public log(level: string, message: string) {
+        if (!(this.logger === undefined)) {
             this.logger.log(level, message);
         }
     }
