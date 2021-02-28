@@ -2,12 +2,10 @@ import * as Discord from "discord.js";
 import * as fs from "fs";
 import { argumentWrapper } from "./interfaces/wrapperObject";
 import { command } from "./interfaces/command";
-import { YoutubePlayer } from "./youtubePlayer";
 
 export class Bot {
     private client: Discord.Client;
     private commands: Discord.Collection<string, command>;
-    private youtubePlayer: YoutubePlayer;
 
     constructor(token: string) {
         this.initBot(token);
@@ -34,7 +32,6 @@ export class Bot {
         const context: argumentWrapper = {
             commands: this.commands,
             client: this.client,
-            youtubePlayer: this.youtubePlayer,
         };
         const eventFiles = fs
             .readdirSync("./src/events")
@@ -58,7 +55,6 @@ export class Bot {
         this.commands = new Discord.Collection();
 
         this.login(token);
-        this.youtubePlayer = new YoutubePlayer();
         this.loadCommands();
         this.loadEvents();
     }

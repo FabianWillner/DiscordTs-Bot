@@ -1,38 +1,8 @@
 import * as Discord from "discord.js";
 import ytdl = require("ytdl-core");
-import { logger } from "./logger/logger";
+import { logger } from "../logger/logger";
 
-export class YoutubePlayer {
-    constructor() {}
-
-    private map = new Map<string, youtubePlayerInstance>();
-
-    public add(link: string, voiceChannel: Discord.VoiceChannel) {
-        const guildId = voiceChannel.guild.id;
-        if (!this.map.has(guildId)) {
-            this.map.set(guildId, new youtubePlayerInstance());
-        }
-        this.map.get(guildId).add(link, voiceChannel);
-    }
-
-    public stop(guildId: string) {
-        this.map.get(guildId)?.stop();
-    }
-
-    public pause(guildId: string) {
-        this.map.get(guildId)?.pause();
-    }
-
-    public resume(guildId: string) {
-        this.map.get(guildId)?.resume();
-    }
-
-    public skip(guildId: string) {
-        this.map.get(guildId)?.skip();
-    }
-}
-
-class youtubePlayerInstance {
+export class youtubePlayerVCInstance {
     private connection: Discord.VoiceConnection;
     private queue: string[] = [];
     private playing: boolean = false;
