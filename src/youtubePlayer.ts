@@ -1,12 +1,11 @@
 import * as Discord from "discord.js";
 import ytdl = require("ytdl-core");
-import * as Winston from "winston";
+import {logger} from "./logger/logger"
 
 export class YoutubePlayer {
-    private logger: Winston.Logger;
 
-    constructor(logger: Winston.Logger) {
-        this.logger = logger;
+    constructor() {
+
     }
 
     private map = new Map<string, youtubePlayerInstance>();
@@ -14,7 +13,7 @@ export class YoutubePlayer {
     public add(link: string, voiceChannel: Discord.VoiceChannel) {
         const guildId = voiceChannel.guild.id;
         if (!this.map.has(guildId)) {
-            this.map.set(guildId, new youtubePlayerInstance(this.logger));
+            this.map.set(guildId, new youtubePlayerInstance());
         }
         this.map.get(guildId).add(link, voiceChannel);
     }
@@ -41,13 +40,11 @@ class youtubePlayerInstance {
     private queue: string[] = [];
     private playing: boolean = false;
     private paused: boolean = false;
-    private logger: Winston.Logger;
     private timer: NodeJS.Timeout;
     private once: boolean;
 
-    constructor(logger: Winston.Logger) {
+    constructor() {
         this.once = true;
-        this.logger = logger;
     }
 
     public async joinVC(voiceChannel: Discord.VoiceChannel) {
@@ -64,7 +61,7 @@ class youtubePlayerInstance {
     }
 
     public async add(link: string, voiceChannel: Discord.VoiceChannel) {
-        //this.logger.log("info", `Adding song to queue`);
+        logger.log("debug", `Adding song to queue`);
         if (this.queue.push(link) == 1 && !this.playing) {
             await this.play(voiceChannel);
         }
@@ -72,7 +69,7 @@ class youtubePlayerInstance {
 
     public pause() {
         if (!this.paused) {
-            //this.logger.log("info", `Pause song`);
+            logger.log("debug", `Pause song`);
             //this.setTimer();
             this.connection.dispatcher.pause();
             this.paused = true;
@@ -81,7 +78,7 @@ class youtubePlayerInstance {
 
     public resume() {
         if (this.paused) {
-            //this.logger.log("info", `Resuming song`);
+            logger.log("debug", `Resuming song`);
             this.connection.dispatcher.resume();
             clearTimeout(this.timer);
             this.paused = false;
@@ -90,7 +87,7 @@ class youtubePlayerInstance {
 
     public skip() {
         if (this.playing) {
-            //this.logger.log("info", `Skipping song`);
+            logger.log("debug", `Skipping song`);
             this.playing = false;
             this.paused = false;
             this.connection.dispatcher.end();
@@ -111,7 +108,7 @@ class youtubePlayerInstance {
             try {
                 clearTimeout(this.timer);
                 const link = this.queue.shift();
-                //this.logger.log("info", `Start playing: ${link}`);
+                logger.log("debug", `Start playing: ${link}`);
                 const stream = ytdl(link, {
                     filter: "audioonly",
                 });
@@ -119,7 +116,7 @@ class youtubePlayerInstance {
                 dispatcher.on("finish", () => this.songFinished());
                 //dispatcher.on("close", () => this.songFinished());
             } catch (error) {
-                //this.logger.log("error", `${error}`);
+                logger.log("error", `${error}`);
                 console.error(error);
                 this.playing = false;
             }
