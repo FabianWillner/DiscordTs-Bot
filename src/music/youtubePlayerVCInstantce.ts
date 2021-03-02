@@ -82,7 +82,7 @@ export class youtubePlayerVCInstance {
                 });
                 const dispatcher = this.connection.play(stream);
                 dispatcher.on("finish", () => this.songFinished());
-                //dispatcher.on("close", () => this.songFinished());
+                dispatcher.on("close", () => this.songFinished());
             } catch (error) {
                 logger.log("error", `${error}`);
                 console.error(error);
@@ -103,8 +103,10 @@ export class youtubePlayerVCInstance {
 
     private leaveChanel() {
         logger.log("debug", "Leave VC");
-        this.connection.channel.leave();
-        clearTimeout(this.timer);
+        if (!this.playing){
+            this.connection.channel.leave();
+            clearTimeout(this.timer);
+        }
     }
 
     private setTimer() {
