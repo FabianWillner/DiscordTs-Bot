@@ -82,7 +82,7 @@ export class youtubePlayerVCInstance {
                 });
                 const dispatcher = this.connection.play(stream);
                 dispatcher.on("finish", () => this.songFinished());
-                dispatcher.on("close", () => this.songFinished());
+                //dispatcher.on("close", () => this.songFinished());
             } catch (error) {
                 logger.log("error", `${error}`);
                 console.error(error);

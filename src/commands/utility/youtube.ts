@@ -23,6 +23,14 @@ module.exports = {
                 youtubePlayer.stop(guildId);
                 break;
             }
+            case "yamete": {
+                youtubePlayer.stop(guildId);
+                break;
+            }
+            case "やめて": {
+                youtubePlayer.stop(guildId);
+                break;
+            }
             case "pause": {
                 youtubePlayer.pause(guildId);
                 break;
