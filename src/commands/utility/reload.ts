@@ -17,7 +17,7 @@ module.exports = {
 
         if (!command) {
             return message.channel.send(
-                `There is no command with name or alias \`${commandName}\`, ${message.author}!`
+                `There is no command with name or alias \`${commandName}\`, ${message.author.username}!`
             );
         }
 
