@@ -3,13 +3,38 @@ import * as Discord from "discord.js";
 import { argumentWrapper } from "../../interfaces/wrapperObject";
 import { logger } from "../../logger/logger";
 import { youtubePlayer } from "../../music/youtubePlayer";
+import { youtubeApi } from "../../../credentials.json";
+import * as youtubeSearch from "youtube-search";
+import { link } from "fs";
+
+
+
+var opts: youtubeSearch.YouTubeSearchOptions = {
+    maxResults: 1,
+    key: youtubeApi
+  };
+
+  function isYoutubeUrl(url: String){
+    if (url != undefined || url != '') {
+        var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
+        var match = url.match(regExp);
+        if (match && match[2].length == 11) {
+            // Do anything for being valid
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    return false;
+  }
 
 module.exports = {
     name: "youtube",
     args: true,
     aliases: ["yt", "play"],
     description: "Plays music from youtube",
-    execute(message: Discord.Message, context: argumentWrapper) {
+    async execute(message: Discord.Message, context: argumentWrapper) {
         const { args } = context;
 
         const voiceChannel: Discord.VoiceChannel = message.member.voice.channel;
@@ -24,6 +49,10 @@ module.exports = {
                 break;
             }
             case "yamete": {
+                youtubePlayer.stop(guildId);
+                break;
+            }
+            case "止めて": {
                 youtubePlayer.stop(guildId);
                 break;
             }
@@ -45,7 +74,12 @@ module.exports = {
             }
             default: {
                 try {
-                    youtubePlayer.add(args[0], voiceChannel);
+                    if (isYoutubeUrl(args[0])){
+                        youtubePlayer.add(args[0], voiceChannel);
+                    } else {
+                        const searchResult = await youtubeSearch(args.join(' '), opts)
+                        youtubePlayer.add(searchResult.results[0].link, voiceChannel);
+                    }   
                 } catch (error) {
                     logger.log("error", `${error}`);
                     //console.error();
