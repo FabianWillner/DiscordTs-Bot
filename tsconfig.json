@@ -1,8 +1,9 @@
 {
     "compilerOptions": {
         "preserveConstEnums": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "outDir": "./build"
     },
-    "include": ["src/**/*", "main.ts"],
-    "exclude": ["node_modules", "**/*.spec.ts"]
+    "include": ["src/**/*", "main.ts", "testMain.ts"],
+    "exclude": ["node_modules", "**/*.spec.ts", "build", "logs"]
 }

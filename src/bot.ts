@@ -16,10 +16,10 @@ export class Bot {
     }
 
     private async loadCommands() {
-        const commandFolders = fs.readdirSync("./src/commands");
+        const commandFolders = fs.readdirSync("./build/src/commands");
         for (const folder of commandFolders) {
             const commandFiles = fs
-                .readdirSync(`./src/commands/${folder}`)
+                .readdirSync(`./build/src/commands/${folder}`)
                 .filter((file) => file.endsWith(".js"));
             for (const file of commandFiles) {
                 const command = require(`./commands/${folder}/${file}`);
@@ -34,7 +34,7 @@ export class Bot {
             client: this.client,
         };
         const eventFiles = fs
-            .readdirSync("./src/events")
+            .readdirSync("./build/src/events")
             .filter((file) => file.endsWith(".js"));
         for (const file of eventFiles) {
             const event = require(`./events/${file}`);
@@ -53,7 +53,6 @@ export class Bot {
     private initBot(token: string) {
         this.client = new Discord.Client();
         this.commands = new Discord.Collection();
-
         this.login(token);
         this.loadCommands();
         this.loadEvents();

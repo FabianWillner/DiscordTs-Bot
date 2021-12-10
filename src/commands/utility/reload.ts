@@ -8,36 +8,37 @@ module.exports = {
     args: true,
     execute(message: Discord.Message, context: argumentWrapper) {
         const { args, commands } = context;
-        const commandName: string = args[0].toLowerCase();
+        let commandName: string = args[0].toLowerCase();
         const command =
             commands.get(commandName) ||
             commands.find(
                 (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
             );
 
+        commandName = command.name;
         if (!command) {
             return message.channel.send(
                 `There is no command with name or alias \`${commandName}\`, ${message.author.username}!`
             );
         }
-
-        const commandFolders: string[] = fs.readdirSync("./src/commands");
+        const projectPath = `${__dirname}\\..\\..\\..\\..`
+        const commandPath = `${projectPath}\\src\\commands`
+        const commandFolders: string[] = fs.readdirSync(commandPath);
         const folderName: string = commandFolders.find((folder) =>
             fs
-                .readdirSync(`./src/commands/${folder}`)
+                .readdirSync(`${commandPath}\\${folder}`)
                 .includes(`${commandName}.ts`)
         );
-
         // execute a cmd command
         const { execSync } = require("child_process");
-        execSync(`tsc ${__dirname}\\..\\${folderName}\\${command.name}.ts`);
+        execSync(`tsc --outdir ${projectPath}\\build\\src ${commandPath}\\${folderName}\\${command.name}.ts --preserveConstEnums true --resolveJsonModule true`);
 
         delete require.cache[
             require.resolve(`../${folderName}/${command.name}.js`)
         ];
 
         try {
-            const newCommand = require(`../${folderName}/${command.name}.js`);
+            const newCommand = require(`..\\${folderName}\\${command.name}.js`);
             commands.set(newCommand.name, newCommand);
             message.channel.send(`Command \`${command.name}\` was reloaded!`);
         } catch (error) {
