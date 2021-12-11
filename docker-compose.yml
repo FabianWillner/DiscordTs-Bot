@@ -3,8 +3,5 @@ version: '3'
 services:
   discordbot:
     build: .
+    restart: always
     command: [ "npm", "run", "start"]
-
-  discordtestbot:
-    build: .
-    command: [ "npm", "run", "dev"]
