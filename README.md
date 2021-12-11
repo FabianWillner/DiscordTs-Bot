@@ -1,4 +1,4 @@
-# DiscordJs-Bot
+# DiscordTS-Bot
 
 ## Quickstart:
 
