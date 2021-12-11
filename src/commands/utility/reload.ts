@@ -21,8 +21,8 @@ module.exports = {
                 `There is no command with name or alias \`${commandName}\`, ${message.author.username}!`
             );
         }
-        const projectPath = `${__dirname}\\..\\..\\..\\..`
-        const commandPath = `${projectPath}\\src\\commands`
+        const projectPath = `${__dirname}\\..\\..\\..\\..`;
+        const commandPath = `${projectPath}\\src\\commands`;
         const commandFolders: string[] = fs.readdirSync(commandPath);
         const folderName: string = commandFolders.find((folder) =>
             fs
@@ -31,7 +31,9 @@ module.exports = {
         );
         // execute a cmd command
         const { execSync } = require("child_process");
-        execSync(`tsc --outdir ${projectPath}\\build\\src ${commandPath}\\${folderName}\\${command.name}.ts --preserveConstEnums true --resolveJsonModule true`);
+        execSync(
+            `tsc --outdir ${projectPath}\\build\\src ${commandPath}\\${folderName}\\${command.name}.ts --preserveConstEnums true --resolveJsonModule true`
+        );
 
         delete require.cache[
             require.resolve(`../${folderName}/${command.name}.js`)

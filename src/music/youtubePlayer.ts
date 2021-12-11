@@ -5,7 +5,7 @@ import { logger } from "../logger/logger";
 
 class YoutubePlayer {
     constructor() {}
-    
+
     private map = new Map<string, youtubePlayerVCInstance>();
 
     public add(link: string, voiceChannel: Discord.VoiceChannel) {

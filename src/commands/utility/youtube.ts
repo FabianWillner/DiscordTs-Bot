@@ -7,27 +7,24 @@ import { youtubeApi } from "../../../credentials.json";
 import * as youtubeSearch from "youtube-search";
 import { link } from "fs";
 
-
-
 var opts: youtubeSearch.YouTubeSearchOptions = {
     maxResults: 1,
-    key: youtubeApi
-  };
+    key: youtubeApi,
+};
 
-  function isYoutubeUrl(url: String){
-    if (url != undefined || url != '') {
+function isYoutubeUrl(url: String) {
+    if (url != undefined || url != "") {
         var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
         var match = url.match(regExp);
         if (match && match[2].length == 11) {
             // Do anything for being valid
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
     return false;
-  }
+}
 
 module.exports = {
     name: "youtube",
@@ -74,12 +71,18 @@ module.exports = {
             }
             default: {
                 try {
-                    if (isYoutubeUrl(args[0])){
+                    if (isYoutubeUrl(args[0])) {
                         youtubePlayer.add(args[0], voiceChannel);
                     } else {
-                        const searchResult = await youtubeSearch(args.join(' '), opts)
-                        youtubePlayer.add(searchResult.results[0].link, voiceChannel);
-                    }   
+                        const searchResult = await youtubeSearch(
+                            args.join(" "),
+                            opts
+                        );
+                        youtubePlayer.add(
+                            searchResult.results[0].link,
+                            voiceChannel
+                        );
+                    }
                 } catch (error) {
                     logger.log("error", `${error}`);
                     //console.error();

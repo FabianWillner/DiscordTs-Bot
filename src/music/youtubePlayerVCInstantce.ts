@@ -103,7 +103,7 @@ export class youtubePlayerVCInstance {
 
     private leaveChanel() {
         logger.log("debug", "Leave VC");
-        if (!this.playing){
+        if (!this.playing) {
             this.connection.channel.leave();
             clearTimeout(this.timer);
         }
