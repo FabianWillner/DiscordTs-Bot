@@ -4,4 +4,6 @@ services:
   discordbot:
     build: .
     restart: always
+    volumes:
+      - ./logs:/usr/app/logs 
     command: [ "npm", "run", "start"]
