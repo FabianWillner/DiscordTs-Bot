@@ -69,6 +69,10 @@ module.exports = {
                 youtubePlayer.resume(guildId);
                 break;
             }
+            case "reset": {
+                youtubePlayer.reset(voiceChannel);
+                break;
+            }
             default: {
                 try {
                     if (isYoutubeUrl(args[0])) {
