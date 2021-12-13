@@ -32,6 +32,15 @@ class YoutubePlayer {
     public skip(guildId: string) {
         this.map.get(guildId)?.skip();
     }
+
+    public reset(voiceChannel: Discord.VoiceChannel) {
+        const guildId = voiceChannel.guild.id;
+        if (this.map.has(guildId)) {
+            this.map.get(guildId)?.forceLeaveChanel();
+            this.map.delete(guildId);
+            this.map.set(guildId, new youtubePlayerVCInstance());
+        } 
+    }
 }
 
 export const youtubePlayer = new YoutubePlayer();
