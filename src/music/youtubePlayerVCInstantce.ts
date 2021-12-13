@@ -55,18 +55,20 @@ export class youtubePlayerVCInstance {
 
     public skip() {
         if (this.playing) {
-            logger.log("debug", `Skipping song`);
+            logger.log("info", `Skipping song`);
             this.playing = false;
             this.paused = false;
             this.connection.dispatcher.end();
+            logger.log("debug", `Skipped song`);
         }
     }
 
     public stop() {
-        logger.log("info", `Stop playing songs`);
+        logger.log("info", `Stopping playing songs`);
         this.playing = false;
         this.queue = [];
         this.connection.dispatcher.end();
+        logger.log("debug", `Stopped playing songs`);
     }
 
     private async play(voiceChannel: Discord.VoiceChannel) {
@@ -102,15 +104,24 @@ export class youtubePlayerVCInstance {
     }
 
     private leaveChanel() {
-        logger.log("debug", "Leave VC");
         if (!this.playing) {
+            logger.log("debug", "Start leaving VC");
             this.connection.channel.leave();
             clearTimeout(this.timer);
+            logger.log("debug", "Ending leaving VC");
         }
     }
 
     private setTimer() {
         clearTimeout(this.timer);
         this.timer = setTimeout(() => this.leaveChanel(), 300000);
+    }
+
+    public forceLeaveChanel() {
+        logger.log("debug", "Starting force leave VC");
+        this.stop();
+        this.connection.channel.leave();
+        clearTimeout(this.timer);
+        logger.log("debug", "Ending force leave VC");
     }
 }
