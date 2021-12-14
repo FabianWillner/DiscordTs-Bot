@@ -36,7 +36,10 @@ module.exports = {
         if (!message.member?.voice.channel){
             return;
         }
-        const voiceChannel: Discord.VoiceChannel = message.member.voice.channel;
+        const voiceChannel = message.member.voice.channel;
+        if (!(voiceChannel instanceof Discord.VoiceChannel)) {
+            return
+        }
         const guildId: string | undefined = message.guild?.id;
         if (!guildId || !args) {
             return;

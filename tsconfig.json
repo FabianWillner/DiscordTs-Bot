@@ -6,5 +6,5 @@
     },
     "include": ["src/**/*", "main.ts", "testMain.ts"],
     "exclude": ["node_modules", "**/*.spec.ts", "build", "logs"],
-    "extends": "@tsconfig/node14"
+    "extends": "@tsconfig/node16"
 }

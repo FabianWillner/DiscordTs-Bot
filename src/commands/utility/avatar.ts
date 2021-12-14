@@ -23,7 +23,6 @@ module.exports = {
         });
 
         // send the entire array of strings as a message
-        // by default, discord.js will `.join()` the array with `\n`
-        message.channel.send(avatarList);
+        message.channel.send(avatarList.join("\n"));
     },
 };
