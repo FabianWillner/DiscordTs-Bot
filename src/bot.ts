@@ -44,12 +44,14 @@ export class Bot {
             .readdirSync("./build/src/events")
             .filter((file) => file.endsWith(".js"));
         for (const file of eventFiles) {
+            console.log(file);
             const event = require(`./events/${file}`);
             if (event.once) {
                 this.client.once(event.name, (...args) =>
                     event.execute(...args, context)
                 );
             } else {
+                console.log(event.name)
                 this.client.on(event.name, (...args) =>
                     event.execute(...args, context)
                 );
@@ -59,13 +61,17 @@ export class Bot {
 
     private async loadSlashcommands(clientId: string){
         const commands = [];
-        const commandFiles = fs.readdirSync('./slashcommands').filter(file => file.endsWith('.js'));
+        const commandFiles = fs.readdirSync('./build/src/slashcommands').filter(file => file.endsWith('.js'));
 
         for (const file of commandFiles) {
             const command = require(`./slashcommands/${file}`);
-            commands.push(command.data.toJSON());
+            if (command.data){
+                commands.push(command.data.toJSON());
+            } else {
+                console.log("command.data is empty")
+            }
+            
         }
-
         const rest = new REST({ version: '9' });
         if (this.client.token !== null){
             rest.setToken(this.client.token);
@@ -76,7 +82,8 @@ export class Bot {
                 console.log('Started refreshing application (/) commands.');
         
                 await rest.put(
-                    Routes.applicationCommands(clientId),
+                    Routes.applicationGuildCommands(clientId, "505286054681640960"),
+                    //Routes.applicationCommands(clientId),
                     { body: commands },
                 );
         
