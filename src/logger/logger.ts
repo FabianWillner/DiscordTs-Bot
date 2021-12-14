@@ -2,9 +2,11 @@ import { Console } from "node:console";
 import * as Winston from "winston";
 
 class Logger {
-    private logger: Winston.Logger;
+    private logger: Winston.Logger | undefined;
 
-    constructor() {}
+    constructor() {
+        
+    }
 
     public initializeLogger(name: String) {
         if (this.logger === undefined) {

@@ -8,7 +8,7 @@ module.exports = {
         const fetch = require("node-fetch");
         const { file } = await fetch(
             "https://aws.random.cat/meow"
-        ).then((response) => response.json());
+        ).json();
         message.channel.send(file);
     },
 };
