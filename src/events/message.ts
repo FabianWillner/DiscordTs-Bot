@@ -16,13 +16,21 @@ module.exports = {
             .trim()
             .split(/ +/);
         context.args = args;
-        const commandName: string = args.shift().toLowerCase();
+        const commandName: string | undefined = args.shift()?.toLowerCase();
+        if (!commandName){
+            return;
+        }
         const { commands } = context;
         const command =
             commands.get(commandName) ||
             commands.find(
-                (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
-            );
+                (cmd) => {
+                    if (!cmd.aliases){
+                        return false;
+                    } else {
+                        return cmd.aliases.includes(commandName)
+                    }  
+            });
         if (!command) return;
         logger.log("debug", `${message.author.username}: used ${commandName}`);
 

@@ -4,7 +4,7 @@ import { argumentWrapper } from "../../interfaces/wrapperObject";
 import { logger } from "../../logger/logger";
 import { youtubePlayer } from "../../music/youtubePlayer";
 import { youtubeApi } from "../../../credentials.json";
-import * as youtubeSearch from "youtube-search";
+import youtubeSearch from "youtube-search";
 import { link } from "fs";
 
 var opts: youtubeSearch.YouTubeSearchOptions = {
@@ -33,13 +33,14 @@ module.exports = {
     description: "Plays music from youtube",
     async execute(message: Discord.Message, context: argumentWrapper) {
         const { args } = context;
-
-        const voiceChannel: Discord.VoiceChannel = message.member.voice.channel;
-        const guildId: string = message.guild.id;
-        if (!voiceChannel) {
+        if (!message.member?.voice.channel){
             return;
         }
-
+        const voiceChannel: Discord.VoiceChannel = message.member.voice.channel;
+        const guildId: string | undefined = message.guild?.id;
+        if (!guildId || !args) {
+            return;
+        }
         switch (args[0]) {
             case "stop": {
                 youtubePlayer.stop(guildId);

@@ -14,7 +14,7 @@ class YoutubePlayer {
             logger.log("debug", "Create new youtubePlayerVCInstance");
             this.map.set(guildId, new youtubePlayerVCInstance());
         }
-        this.map.get(guildId).add(link, voiceChannel);
+        this.map.get(guildId)?.add(link, voiceChannel);
     }
 
     public stop(guildId: string) {

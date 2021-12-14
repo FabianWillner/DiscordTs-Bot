@@ -7,10 +7,10 @@ module.exports = {
     aliases: ["testyoutube", "watch", "watch2gether", "together"],
     description: "Testing youtube",
     async execute(message: Discord.Message, context: argumentWrapper) {
-        const voiceChannel: Discord.VoiceChannel = message.member.voice.channel;
-        if (!voiceChannel) {
+        if (!message.member?.voice.channel){
             return;
         }
+        const voiceChannel: Discord.VoiceChannel = message.member.voice.channel;
         const fetch = require("node-fetch");
         const response = await fetch(
             `https://discord.com/api/v8/channels/${voiceChannel}/invites`,

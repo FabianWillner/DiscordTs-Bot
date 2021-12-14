@@ -6,7 +6,9 @@ module.exports = {
     once: true,
     execute(context: argumentWrapper) {
         const { client } = context;
-
+        if (!client.user){
+            return;
+        }
         client.user.setActivity("YOU!!!", { type: "WATCHING" });
         logger.initializeLogger(client.user.username);
         logger.log("info", "The bot is online!");
