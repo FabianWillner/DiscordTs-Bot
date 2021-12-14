@@ -2,13 +2,20 @@ import * as Discord from "discord.js";
 import * as fs from "fs";
 import { argumentWrapper } from "./interfaces/wrapperObject";
 import { command } from "./interfaces/command";
+import { REST } from '@discordjs/rest';
+import { Routes } from 'discord-api-types/v9';
 
 export class Bot {
     private client: Discord.Client;
     private commands: Discord.Collection<string, command>;
 
-    constructor(token: string) {
-        this.initBot(token);
+    constructor(token: string, clientId: string) {
+        this.client = new Discord.Client();
+        this.commands = new Discord.Collection();
+        this.login(token);
+        this.loadCommands();
+        this.loadSlashcommands(clientId)
+        this.loadEvents();
     }
 
     private login(token: string) {
@@ -50,11 +57,33 @@ export class Bot {
         }
     }
 
-    private initBot(token: string) {
-        this.client = new Discord.Client();
-        this.commands = new Discord.Collection();
-        this.login(token);
-        this.loadCommands();
-        this.loadEvents();
+    private async loadSlashcommands(clientId: string){
+        const commands = [];
+        const commandFiles = fs.readdirSync('./slashcommands').filter(file => file.endsWith('.js'));
+
+        for (const file of commandFiles) {
+            const command = require(`./slashcommands/${file}`);
+            commands.push(command.data.toJSON());
+        }
+
+        const rest = new REST({ version: '9' });
+        if (this.client.token !== null){
+            rest.setToken(this.client.token);
+        }
+        
+        (async () => {
+            try {
+                console.log('Started refreshing application (/) commands.');
+        
+                await rest.put(
+                    Routes.applicationCommands(clientId),
+                    { body: commands },
+                );
+        
+                console.log('Successfully reloaded application (/) commands.');
+            } catch (error) {
+                console.error(error);
+            }
+        })();
     }
 }
