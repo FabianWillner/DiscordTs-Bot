@@ -3,7 +3,7 @@ import ytdl = require("ytdl-core");
 import { logger } from "../logger/logger";
 
 export class youtubePlayerVCInstance {
-    private connection: Discord.VoiceConnection | undefined;
+    private connection: unknown;
     private queue: string[] = [];
     private playing: boolean = false;
     private paused: boolean = false;
