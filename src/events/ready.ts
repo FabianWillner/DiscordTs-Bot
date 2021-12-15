@@ -1,12 +1,13 @@
-import { argumentWrapper } from "../interfaces/wrapperObject";
-import { logger } from "../logger/logger";
+import * as Discord from "discord.js";
+import { logger } from "../logger/logger.js";
 
-module.exports = {
+export default {
     name: "ready",
     once: true,
-    execute(context: argumentWrapper) {
-        const { client } = context;
-
+    execute(client: Discord.Client) {
+        if (!client.user) {
+            return;
+        }
         client.user.setActivity("YOU!!!", { type: "WATCHING" });
         logger.initializeLogger(client.user.username);
         logger.log("info", "The bot is online!");

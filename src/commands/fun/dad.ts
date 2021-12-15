@@ -1,11 +1,10 @@
-import { argumentWrapper } from "../../interfaces/wrapperObject";
 import * as Discord from "discord.js";
+import fetch from "node-fetch";
 
-module.exports = {
+export default {
     name: "dad",
     description: "dad joke",
-    async execute(message: Discord.Message, context: argumentWrapper) {
-        const fetch = require("node-fetch");
+    async execute(message: Discord.Message, args: string[]) {
         const response = await fetch("https://icanhazdadjoke.com/", {
             method: "GET",
             headers: {
@@ -13,6 +12,7 @@ module.exports = {
             },
         });
         const invite = await response.json();
+        // @ts-ignore
         message.channel.send(invite.joke);
     },
 };

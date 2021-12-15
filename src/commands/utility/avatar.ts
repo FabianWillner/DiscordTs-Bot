@@ -1,12 +1,11 @@
-import { argumentWrapper } from "../../interfaces/wrapperObject";
 import * as Discord from "discord.js";
 
-module.exports = {
+export default {
     name: "avatar",
     aliases: ["icon", "pfp"],
     description:
         "Shows the users avatar, use @Username to show the avatar of the User",
-    execute(message: Discord.Message, context: argumentWrapper) {
+    execute(message: Discord.Message, args: string[]) {
         if (!message.mentions.users.size) {
             return message.channel.send(
                 `${message.author.displayAvatarURL({
@@ -23,7 +22,6 @@ module.exports = {
         });
 
         // send the entire array of strings as a message
-        // by default, discord.js will `.join()` the array with `\n`
-        message.channel.send(avatarList);
+        message.channel.send(avatarList.join("\n"));
     },
 };

@@ -1,8 +1,7 @@
-import { Console } from "node:console";
-import * as Winston from "winston";
+import Winston from "winston";
 
 class Logger {
-    private logger: Winston.Logger;
+    private logger: Winston.Logger | undefined;
 
     constructor() {}
 

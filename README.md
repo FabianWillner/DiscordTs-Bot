@@ -12,9 +12,10 @@ Edit the **credentials.json** file to look like this:
     "prefix": "!",
     "hotword": "test",
     "token": "YOUR DISCORD BOT TOKEN HERE",
-    "youtubeApi": "YOUR YOUTUBE API TOKEN HERE"
+    "youtubeApi": "YOUR YOUTUBE API TOKEN HERE",
+    "clientId": "YOUR BOT CLIENT ID HERE"
 }
 ```
-Put in your Discord and Youtube api tokens.
+Put in your Discord and Youtube api tokens also the Bots clientId.
 
 3. Start the dockercontainer in your terminal with `docker-compose up`.

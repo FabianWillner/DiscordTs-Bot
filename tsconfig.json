@@ -2,8 +2,12 @@
     "compilerOptions": {
         "preserveConstEnums": true,
         "resolveJsonModule": true,
-        "outDir": "./build"
+        "outDir": "./build",
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "esModuleInterop": true
     },
-    "include": ["src/**/*", "main.ts", "testMain.ts"],
-    "exclude": ["node_modules", "**/*.spec.ts", "build", "logs"]
+    "include": ["src/**/*", "main.ts", "testMain.ts", "deployCommands.ts"],
+    "exclude": ["node_modules", "**/*.spec.ts", "build", "logs"],
+    "extends": "@tsconfig/node16"
 }

@@ -1,17 +1,16 @@
-import { argumentWrapper } from "../../interfaces/wrapperObject";
 import * as Discord from "discord.js";
-import { token } from "../../../credentials.json";
+import credentials from "../../../credentials.json";
+import fetch from "node-fetch";
 
-module.exports = {
+export default {
     name: "fish",
     aliases: ["fishington", "fishington.io", "angeln"],
     description: "Fishington.io a game",
-    async execute(message: Discord.Message, context: argumentWrapper) {
-        const voiceChannel: Discord.VoiceChannel = message.member.voice.channel;
-        if (!voiceChannel) {
+    async execute(message: Discord.Message, args: string[]) {
+        if (!message.member?.voice.channel) {
             return;
         }
-        const fetch = require("node-fetch");
+        const voiceChannel = message.member.voice.channel;
         const response = await fetch(
             `https://discord.com/api/v8/channels/${voiceChannel}/invites`,
             {
@@ -25,17 +24,18 @@ module.exports = {
                     validate: null,
                 }),
                 headers: {
-                    Authorization: `Bot ${token}`,
+                    Authorization: `Bot ${credentials.token}`,
                     "Content-Type": "application/json",
                 },
             }
         );
         const invite = await response.json();
-
-        if (!invite.code) {
+        // @ts-ignore
+        if (!invite || !invite.code) {
             message.channel.send("Cannot start Fishington.io, please retry");
         } else {
             message.channel.send(
+                // @ts-ignore
                 `Click on the Link to start fishing Together:\n> https://discord.com/invite/${invite.code}`
             );
         }
