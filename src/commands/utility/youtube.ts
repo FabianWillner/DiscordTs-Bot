@@ -96,6 +96,7 @@ class youtubePlayer {
         logger.log("info", `Playing song: ${link}`);
         return ytdl(link, {
             filter: "audioonly",
+            highWaterMark: 1048576 / 4,
         });
     }
 
