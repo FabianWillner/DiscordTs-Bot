@@ -1,4 +1,4 @@
-FROM node:14-alpine3.10 as ts-compiler
+FROM node:16.13.1-alpine3.13 as ts-compiler
 WORKDIR /usr/app
 COPY package*.json ./
 COPY tsconfig*.json ./
