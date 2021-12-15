@@ -21,21 +21,6 @@ var opts: youtubeSearch.YouTubeSearchOptions = {
     key: credentials.youtubeApi,
 };
 
-function isYoutubeUrl(url: String) {
-    if (url != undefined || url != "") {
-        var regExp =
-            /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
-        var match = url.match(regExp);
-        if (match && match[2].length == 11) {
-            // Do anything for being valid
-            return true;
-        } else {
-            return false;
-        }
-    }
-    return false;
-}
-
 const states: Discord.Collection<string, youtubePlayer> =
     new Discord.Collection();
 
@@ -54,6 +39,14 @@ class youtubePlayer {
         // Add listeners
         connection.on(VoiceConnectionStatus.Ready, this.onConnectionReady);
         this.player.on(AudioPlayerStatus.Idle, this.onPlayerIdle.bind(this));
+
+        this.player.on("error", (error: any) => {
+            logger.log(
+                "error",
+                `Error: ${error.message} with resource ${error?.resource?.metadata?.title}`
+            );
+            this.player.stop();
+        });
     }
 
     private getConnection(): VoiceConnection {
@@ -100,7 +93,7 @@ class youtubePlayer {
     private getStream(): internal.Readable | undefined {
         const link = this.queue.shift();
         if (!link) return;
-
+        logger.log("info", `Playing song: ${link}`);
         return ytdl(link, {
             filter: "audioonly",
         });
@@ -109,7 +102,6 @@ class youtubePlayer {
     private playNextSong() {
         const stream = this.getStream();
         if (!stream) return;
-
         this.player.play(createAudioResource(stream));
     }
 
@@ -264,7 +256,7 @@ export default {
                 default: {
                     const player = getOrCreatePlayer(vc);
 
-                    if (isYoutubeUrl(args[0])) {
+                    if (ytdl.validateURL(args[0])) {
                         player.addToQueue(args[0]);
                     } else {
                         await player.youtubeSearch(args.join(" "));
