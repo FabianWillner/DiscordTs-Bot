@@ -1,17 +1,30 @@
-import { prefix } from "../../credentials.json";
 import * as Discord from "discord.js";
-import * as DiscordApi from "discord-api-types/v9";
-import { argumentWrapper } from "../interfaces/wrapperObject";
-import { logger } from "../logger/logger";
+import { slashcommands } from "../helperStructures/slashcommands.js";
+import { logger } from "../logger/logger.js";
 
-module.exports = {
+export default {
     name: "interactionCreate",
-    execute(interaction: Discord.Interaction, context: argumentWrapper) {
+    execute(interaction: Discord.Interaction) {
         console.log("Respons?????");
-        if (!interaction.isButton()) return;
 
-        if (interaction.customId === "ping") {
-            interaction.reply("Pong!");
+        if (interaction.isButton()) {
+            if (interaction.customId === "ping") {
+                interaction.reply("Pong!");
+            }
+        } else if (interaction.isCommand()) {
+            const command = slashcommands.get(interaction.commandName);
+            if (!command) return;
+            try {
+                command.execute(interaction);
+            } catch (error) {
+                logger.log(
+                    "error",
+                    `the message ${interaction.command} has thrown: ${error}`
+                );
+                interaction.reply(
+                    "there was an error trying to execute that command!"
+                );
+            }
         }
     },
 };

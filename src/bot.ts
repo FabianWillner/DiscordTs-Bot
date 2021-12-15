@@ -1,19 +1,18 @@
 import * as Discord from "discord.js";
 import * as fs from "fs";
-import { argumentWrapper } from "./interfaces/wrapperObject";
-import { command } from "./interfaces/command";
+import { slashcommands } from "./helperStructures/slashcommands.js";
+import { commands } from "./helperStructures/commands.js";
 
 export class Bot {
     private client: Discord.Client;
-    private commands: Discord.Collection<string, command>;
 
     constructor(token: string) {
         this.client = new Discord.Client({
             intents: new Discord.Intents(32767),
         });
-        this.commands = new Discord.Collection();
         this.login(token);
         this.loadCommands();
+        this.loadSlashCommands();
         this.loadEvents();
     }
 
@@ -28,30 +27,41 @@ export class Bot {
                 .readdirSync(`./build/src/commands/${folder}`)
                 .filter((file) => file.endsWith(".js"));
             for (const file of commandFiles) {
-                const command = require(`./commands/${folder}/${file}`);
-                this.commands.set(command.name, command);
+                const { default: command } = await import(
+                    `./commands/${folder}/${file}`
+                );
+                commands.set(command.name, command);
+            }
+        }
+    }
+
+    private async loadSlashCommands() {
+        const commandFolders = fs.readdirSync("./build/src/slashcommands");
+        for (const folder of commandFolders) {
+            const commandFiles = fs
+                .readdirSync(`./build/src/slashcommands/${folder}`)
+                .filter((file) => file.endsWith(".js"));
+            for (const file of commandFiles) {
+                const { default: command } = await import(
+                    `./slashcommands/${folder}/${file}`
+                );
+                slashcommands.set(file.replace(".js", ""), command);
             }
         }
     }
 
     private async loadEvents() {
-        const context: argumentWrapper = {
-            commands: this.commands,
-            client: this.client,
-        };
         const eventFiles = fs
             .readdirSync("./build/src/events")
             .filter((file) => file.endsWith(".js"));
         for (const file of eventFiles) {
-            const event = require(`./events/${file}`);
+            const { default: event } = await import(`./events/${file}`);
             if (event.once) {
                 this.client.once(event.name, (...args) =>
-                    event.execute(...args, context)
+                    event.execute(...args)
                 );
             } else {
-                this.client.on(event.name, (...args) =>
-                    event.execute(...args, context)
-                );
+                this.client.on(event.name, (...args) => event.execute(...args));
             }
         }
     }

@@ -1,8 +1,7 @@
 import * as Discord from "discord.js";
-import { argumentWrapper } from "../interfaces/wrapperObject";
-import { logger } from "../logger/logger";
+import { logger } from "../logger/logger.js";
 
-module.exports = {
+export default {
     name: "ready",
     once: true,
     execute(client: Discord.Client) {

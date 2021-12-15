@@ -1,31 +1,26 @@
-import fs = require("fs");
-import { argumentWrapper } from "../../interfaces/wrapperObject";
+import fs from "fs";
 import * as Discord from "discord.js";
+import { commands } from "../../helperStructures/commands.js";
 
-module.exports = {
+export default {
     name: "reload",
     description: "Reloads a command",
     args: true,
-    execute(message: Discord.Message, context: argumentWrapper) {
-        const { args, commands } = context;
-        if (!args){
-            return;
-        }
+    execute(message: Discord.Message, args: string[]) {
         let commandName: string = args[0].toLowerCase();
         const command =
             commands.get(commandName) ||
-            commands.find(
-                (cmd) => {
-                    if (!cmd.aliases){
-                        return false;
-                    } else {
-                        return cmd.aliases.includes(commandName)
-                    }  
+            commands.find((cmd) => {
+                if (!cmd.aliases) {
+                    return false;
+                } else {
+                    return cmd.aliases.includes(commandName);
+                }
             });
-        if (!command){
+        if (!command) {
             return message.channel.send(
                 `There is no command with name or alias \`${commandName}\`, ${message.author.username}!`
-            );;
+            );
         }
         commandName = command.name;
         const projectPath = `${__dirname}\\..\\..\\..\\..`;
@@ -36,10 +31,10 @@ module.exports = {
                 .readdirSync(`${commandPath}\\${folder}`)
                 .includes(`${commandName}.ts`)
         );
-        if (!folderName){
+        if (!folderName) {
             return message.channel.send(
                 `There is no file with name \`${commandName}.ts\`, ${message.author.username}!`
-            );;;
+            );
         }
         // execute a cmd command
         const { execSync } = require("child_process");

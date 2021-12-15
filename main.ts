@@ -1,4 +1,4 @@
-import { Bot } from "./src/bot";
+import { Bot } from "./src/bot.js";
 import { token } from "./credentials.json";
 
 function main() {

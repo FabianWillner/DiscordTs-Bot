@@ -1,10 +1,9 @@
-import { argumentWrapper } from "../../interfaces/wrapperObject";
 import * as Discord from "discord.js";
 
-module.exports = {
+export default {
     name: "kick",
     description: "Poggers",
-    execute(message: Discord.Message, context: argumentWrapper) {
+    execute(message: Discord.Message, args: string[]) {
         if (!message.mentions.users.size) {
             message.reply("you need to tag a user in order to kick them!");
             return;

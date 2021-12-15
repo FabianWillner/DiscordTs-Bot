@@ -1,11 +1,9 @@
-import * as Winston from "winston";
+import Winston from "winston";
 
 class Logger {
     private logger: Winston.Logger | undefined;
 
-    constructor() {
-        
-    }
+    constructor() {}
 
     public initializeLogger(name: String) {
         if (this.logger === undefined) {

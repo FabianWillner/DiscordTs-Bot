@@ -10,16 +10,15 @@ import {
     getVoiceConnection,
     VoiceConnection,
 } from "@discordjs/voice";
-import { argumentWrapper } from "../../interfaces/wrapperObject";
-import { youtubeApi } from "../../../credentials.json";
+import credentials from "../../../credentials.json";
 import ytdl from "ytdl-core";
-import { logger } from "../../logger/logger";
+import { logger } from "../../logger/logger.js";
 import internal from "stream";
 import { MessageActionRow } from "discord.js";
 
 var opts: youtubeSearch.YouTubeSearchOptions = {
     maxResults: 1,
-    key: youtubeApi,
+    key: credentials.youtubeApi,
 };
 
 function isYoutubeUrl(url: String) {
@@ -171,13 +170,13 @@ function getOrCreatePlayer(vc: Discord.VoiceChannel): youtubePlayer {
     return player;
 }
 
-module.exports = {
+export default {
     name: "youtube",
     args: true,
     aliases: ["yt", "play"],
     description: "Plays music from youtube",
-    buttons(){},
-    async execute(message: Discord.Message, context: argumentWrapper) {
+    buttons() {},
+    async execute(message: Discord.Message, args: string[]) {
         // Check if the user is in a voice channel
         const vc = message.member?.voice.channel;
         if (!(vc instanceof Discord.VoiceChannel)) {
@@ -186,7 +185,6 @@ module.exports = {
         }
 
         // Check if there were any arguments provided
-        const { args } = context;
         if (!args) {
             logger.log("info", "User did not provide arguments.");
             return;

@@ -1,35 +1,36 @@
-import { prefix } from "../../credentials.json";
+import credentials from "../../credentials.json";
 import * as Discord from "discord.js";
-import { argumentWrapper } from "../interfaces/wrapperObject";
-import { logger } from "../logger/logger";
+import { logger } from "../logger/logger.js";
+import { commands } from "../helperStructures/commands.js";
 
-module.exports = {
+export default {
     name: "messageCreate",
-    execute(message: Discord.Message, context: argumentWrapper) {
-        if (!message.content.startsWith(prefix) || message.author.bot) return;
+    execute(message: Discord.Message) {
+        if (
+            !message.content.startsWith(credentials.prefix) ||
+            message.author.bot
+        )
+            return;
         logger.log(
             "info",
             `${message.author.username}: ${message.cleanContent}`
         );
         const args: string[] = message.content
-            .slice(prefix.length)
+            .slice(credentials.prefix.length)
             .trim()
             .split(/ +/);
-        context.args = args;
         const commandName: string | undefined = args.shift()?.toLowerCase();
-        if (!commandName){
+        if (!commandName) {
             return;
         }
-        const { commands } = context;
         const command =
             commands.get(commandName) ||
-            commands.find(
-                (cmd) => {
-                    if (!cmd.aliases){
-                        return false;
-                    } else {
-                        return cmd.aliases.includes(commandName)
-                    }  
+            commands.find((cmd) => {
+                if (!cmd.aliases) {
+                    return false;
+                } else {
+                    return cmd.aliases.includes(commandName);
+                }
             });
         if (!command) return;
         logger.log("debug", `${message.author.username}: used ${commandName}`);
@@ -38,14 +39,14 @@ module.exports = {
             let reply = `You didn't provide any arguments, ${message.author.username}!`;
 
             if (command.usage) {
-                reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+                reply += `\nThe proper usage would be: \`${credentials.prefix}${command.name} ${command.usage}\``;
             }
 
             return message.channel.send(reply);
         }
 
         try {
-            command.execute(message, context);
+            command.execute(message, args);
         } catch (error) {
             logger.log(
                 "error",

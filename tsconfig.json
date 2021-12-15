@@ -3,6 +3,9 @@
         "preserveConstEnums": true,
         "resolveJsonModule": true,
         "outDir": "./build",
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "esModuleInterop": true
     },
     "include": ["src/**/*", "main.ts", "testMain.ts", "deployCommands.ts"],
     "exclude": ["node_modules", "**/*.spec.ts", "build", "logs"],

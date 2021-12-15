@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "A simple Javascript Discord Bot",
     "main": "tsc & node main.js",
+    "type": "module",
     "dependencies": {
         "@discordjs/builders": "^0.9.0",
         "@discordjs/rest": "0.1.0-canary.0",
@@ -25,8 +26,8 @@
         "typescript": "^4.5.4"
     },
     "scripts": {
-        "start": "tsc & node build/main.js",
-        "dev": "tsc & node build/testMain.js",
+        "start": "tsc & node --experimental-json-modules build/main.js",
+        "dev": "tsc & node --experimental-json-modules build/testMain.js",
         "prettier": "prettier --config .prettierrc src/**/*.ts --write",
         "build": "tsc",
         "deploy": "node build/deployCommands.js"

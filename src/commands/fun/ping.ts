@@ -1,10 +1,9 @@
-import { argumentWrapper } from "../../interfaces/wrapperObject";
 import * as Discord from "discord.js";
 
-module.exports = {
+export default {
     name: "ping",
     description: "Ping!",
-    execute(message: Discord.Message, context: argumentWrapper) {
+    execute(message: Discord.Message, args: string[]) {
         message.channel.send("Pong.");
     },
 };
