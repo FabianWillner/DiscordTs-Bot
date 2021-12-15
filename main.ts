@@ -1,8 +1,8 @@
 import { Bot } from "./src/bot";
-import { token, clientId } from "./credentials.json";
+import { token } from "./credentials.json";
 
-function main(){
-    const bot: Bot = new Bot(token, clientId);
+function main() {
+    const bot: Bot = new Bot(token);
 }
 
 main();

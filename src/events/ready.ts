@@ -1,12 +1,12 @@
+import * as Discord from "discord.js";
 import { argumentWrapper } from "../interfaces/wrapperObject";
 import { logger } from "../logger/logger";
 
 module.exports = {
     name: "ready",
     once: true,
-    execute(context: argumentWrapper) {
-        const { client } = context;
-        if (!client.user){
+    execute(client: Discord.Client) {
+        if (!client.user) {
             return;
         }
         client.user.setActivity("YOU!!!", { type: "WATCHING" });

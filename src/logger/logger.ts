@@ -1,4 +1,3 @@
-import { Console } from "node:console";
 import * as Winston from "winston";
 
 class Logger {
