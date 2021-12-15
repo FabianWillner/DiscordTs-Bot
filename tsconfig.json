@@ -4,7 +4,7 @@
         "resolveJsonModule": true,
         "outDir": "./build",
     },
-    "include": ["src/**/*", "main.ts", "testMain.ts"],
+    "include": ["src/**/*", "main.ts", "testMain.ts", "deployCommands.ts"],
     "exclude": ["node_modules", "**/*.spec.ts", "build", "logs"],
     "extends": "@tsconfig/node16"
 }

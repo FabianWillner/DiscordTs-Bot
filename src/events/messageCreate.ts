@@ -4,7 +4,7 @@ import { argumentWrapper } from "../interfaces/wrapperObject";
 import { logger } from "../logger/logger";
 
 module.exports = {
-    name: "message",
+    name: "messageCreate",
     execute(message: Discord.Message, context: argumentWrapper) {
         if (!message.content.startsWith(prefix) || message.author.bot) return;
         logger.log(
