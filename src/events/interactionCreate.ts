@@ -5,8 +5,6 @@ import { logger } from "../logger/logger.js";
 export default {
     name: "interactionCreate",
     execute(interaction: Discord.Interaction) {
-        console.log("Respons?????");
-
         if (interaction.isButton()) {
             if (interaction.customId === "ping") {
                 interaction.reply("Pong!");
