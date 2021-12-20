@@ -23,10 +23,6 @@ export const command = {
                 }
                 player.skip();
                 player.reply(interaction);
-                await interaction.reply({
-                    content: "Skipping the song.",
-                    ephemeral: true,
-                });
             }
         }
     },

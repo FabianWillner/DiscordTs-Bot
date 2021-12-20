@@ -23,10 +23,6 @@ export const command = {
                 }
                 player.stop();
                 player.reply(interaction);
-                await interaction.reply({
-                    content: "Stopping the song.",
-                    ephemeral: true,
-                });
             }
         }
     },
