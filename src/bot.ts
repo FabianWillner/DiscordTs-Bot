@@ -45,12 +45,11 @@ export class Bot {
                 const { command } = await import(
                     `./slashcommands/${folder}/${file}`
                 );
-                if (command){
+                if (command) {
                     slashcommands.set(file.replace(".js", ""), command);
                 }
             }
         }
-        console.log(slashcommands);
     }
 
     private async loadEvents() {
