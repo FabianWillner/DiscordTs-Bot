@@ -9,6 +9,7 @@ import {
     VoiceConnectionStatus,
     getVoiceConnection,
     VoiceConnection,
+    entersState,
 } from "@discordjs/voice";
 import credentials from "../../../credentials.json";
 import ytdl from "ytdl-core";
@@ -28,6 +29,7 @@ class youtubePlayer {
     private readonly vc: Discord.VoiceChannel;
     readonly queue: string[] = [];
     private readonly player: AudioPlayer;
+    public onConnectionDisconnect?: () => void;
 
     constructor(vc: Discord.VoiceChannel) {
         this.vc = vc;
@@ -38,6 +40,34 @@ class youtubePlayer {
 
         // Add listeners
         connection.on(VoiceConnectionStatus.Ready, this.onConnectionReady);
+        connection.on(
+            VoiceConnectionStatus.Disconnected,
+            async (oldState, newState) => {
+                if (connection) {
+                    try {
+                        await Promise.race([
+                            entersState(
+                                connection,
+                                VoiceConnectionStatus.Signalling,
+                                5_000
+                            ),
+                            entersState(
+                                connection,
+                                VoiceConnectionStatus.Connecting,
+                                5_000
+                            ),
+                        ]);
+                        // Seems to be reconnecting to a new channel - ignore disconnect
+                    } catch (error) {
+                        // Seems to be a real disconnect which SHOULDN'T be recovered from
+                        connection.destroy();
+                        this.player.stop();
+                        if (!this.onConnectionDisconnect) return;
+                        this.onConnectionDisconnect();
+                    }
+                }
+            }
+        );
         this.player.on(AudioPlayerStatus.Idle, this.onPlayerIdle.bind(this));
 
         this.player.on("error", (error: any) => {
@@ -157,6 +187,11 @@ function getOrCreatePlayer(vc: Discord.VoiceChannel): youtubePlayer {
 
     if (!player) {
         player = new youtubePlayer(vc);
+        player.onConnectionDisconnect = () => {
+            logger.log("info", "player is disconnected. Trying to kill player");
+            states.delete(vc.guildId);
+            player = undefined;
+        };
         states.set(vc.guildId, player);
     }
 

@@ -42,12 +42,15 @@ export class Bot {
                 .readdirSync(`./build/src/slashcommands/${folder}`)
                 .filter((file) => file.endsWith(".js"));
             for (const file of commandFiles) {
-                const { default: command } = await import(
+                const { command } = await import(
                     `./slashcommands/${folder}/${file}`
                 );
-                slashcommands.set(file.replace(".js", ""), command);
+                if (command){
+                    slashcommands.set(file.replace(".js", ""), command);
+                }
             }
         }
+        console.log(slashcommands);
     }
 
     private async loadEvents() {
