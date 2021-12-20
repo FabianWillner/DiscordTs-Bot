@@ -22,6 +22,7 @@ export const command = {
                     return;
                 }
                 player.skip();
+                player.reply(interaction);
                 await interaction.reply({
                     content: "Skipping the song.",
                     ephemeral: true,

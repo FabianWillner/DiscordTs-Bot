@@ -27,7 +27,12 @@ const youtubePlayerCollection: Discord.Collection<string, youtubePlayer> =
 
 class youtubePlayer {
     private readonly vc: Discord.VoiceChannel;
+    private currentlyPlaying = "Nothing";
     readonly queue: string[] = [];
+    private lastMessage:
+        | Discord.Message
+        | Discord.ButtonInteraction
+        | undefined = undefined;
     private readonly player: AudioPlayer;
     public onConnectionDisconnect?: () => void;
 
@@ -108,6 +113,9 @@ class youtubePlayer {
 
     private onPlayerIdle() {
         this.playNextSong();
+        if (this.lastMessage) {
+            this.reply(this.lastMessage);
+        }
     }
 
     async youtubeSearch(text: string) {
@@ -122,8 +130,12 @@ class youtubePlayer {
 
     private getStream(): internal.Readable | undefined {
         const link = this.queue.shift();
-        if (!link) return;
+        if (!link) {
+            this.currentlyPlaying = "Nothing";
+            return;
+        }
         logger.log("info", `Playing song: ${link}`);
+        this.currentlyPlaying = link;
         return ytdl(link, {
             filter: "audioonly",
             highWaterMark: 1048576 / 4,
@@ -169,6 +181,55 @@ class youtubePlayer {
     stop() {
         this.queue.splice(0);
         this.player.stop();
+    }
+
+    async reply(
+        message: Discord.Message | Discord.ButtonInteraction
+    ): Promise<void> {
+        const row = new MessageActionRow().addComponents(
+            new Discord.MessageButton()
+                .setCustomId("youtubeStop")
+                .setStyle("DANGER")
+                .setEmoji("⏹"),
+            new Discord.MessageButton()
+                .setCustomId("youtubePause")
+                .setStyle("PRIMARY")
+                .setEmoji("⏸"),
+            new Discord.MessageButton()
+                .setCustomId("youtubePlay")
+                .setStyle("PRIMARY")
+                .setEmoji("▶️"),
+            new Discord.MessageButton()
+                .setCustomId("youtubeSkip")
+                .setStyle("SUCCESS")
+                .setEmoji("⏭")
+        );
+
+        if (message instanceof Discord.Message) {
+            const nmessage = await message.reply({
+                content: `Currently playing: ${this.currentlyPlaying}`,
+                components: [row],
+            });
+            this.deleteMessage();
+            this.lastMessage = nmessage;
+        } else if (message instanceof Discord.ButtonInteraction) {
+            await message.reply({
+                content: `Currently playing: ${this.currentlyPlaying}`,
+                components: [row],
+            });
+            this.deleteMessage();
+            this.lastMessage = message;
+        }
+    }
+
+    async deleteMessage() {
+        if (this.lastMessage) {
+            if (this.lastMessage instanceof Discord.Message) {
+                await this.lastMessage.delete();
+            } else if (this.lastMessage instanceof Discord.ButtonInteraction) {
+                await this.lastMessage.deleteReply();
+            }
+        }
     }
 
     // TODO: remove
@@ -228,30 +289,10 @@ export default {
                         return;
                     }
 
-                    const row = new MessageActionRow().addComponents(
-                        new Discord.MessageButton()
-                            .setCustomId("youtubeStop")
-                            .setStyle("DANGER")
-                            .setEmoji("⏹"),
-                        new Discord.MessageButton()
-                            .setCustomId("youtubePause")
-                            .setStyle("PRIMARY")
-                            .setEmoji("⏸"),
-                        new Discord.MessageButton()
-                            .setCustomId("youtubePlay")
-                            .setStyle("PRIMARY")
-                            .setEmoji("▶️"),
-                        new Discord.MessageButton()
-                            .setCustomId("youtubeSkip")
-                            .setStyle("PRIMARY")
-                            .setEmoji("⏭")
-                    );
-
                     message.reply({
                         content: player.queue.join(" ") || "Empty",
-                        components: [row],
                     });
-
+                    player.reply(message);
                     break;
                 }
                 case "fill": {
@@ -268,6 +309,7 @@ export default {
                     }
 
                     player.pause();
+                    player.reply(message);
                     break;
                 }
                 case "resume": {
@@ -278,6 +320,7 @@ export default {
                     }
 
                     player.unpause();
+                    player.reply(message);
                     break;
                 }
                 case "skip": {
@@ -288,6 +331,7 @@ export default {
                     }
 
                     player.skip();
+                    player.reply(message);
                     break;
                 }
                 case "stop": {
@@ -298,6 +342,7 @@ export default {
                     }
 
                     player.stop();
+                    player.reply(message);
                     break;
                 }
 
@@ -309,12 +354,14 @@ export default {
                     } else {
                         await player.youtubeSearch(args.join(" "));
                     }
+                    player.reply(message);
                 }
             }
         } else {
             const player = getOrCreatePlayer(vc);
 
             await player.youtubeSearch(args.join(" "));
+            player.reply(message);
         }
     },
 };
