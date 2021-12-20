@@ -6,7 +6,7 @@ export const data = new SlashCommandBuilder()
     .setDescription("Replies with Pong");
 
 export const command = {
-    execute(interaction: Discord.CommandInteraction) {
-        interaction.reply("Pong!");
+    async execute(interaction: Discord.CommandInteraction) {
+        await interaction.reply({ content: 'Pong!', ephemeral: true });
     },
 };

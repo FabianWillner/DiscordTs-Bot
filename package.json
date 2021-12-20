@@ -30,7 +30,7 @@
         "dev": "tsc & node --experimental-json-modules build/testMain.js",
         "prettier": "prettier --config .prettierrc src/**/*.ts --write",
         "build": "tsc",
-        "deploy": "node build/deployCommands.js"
+        "deploy": "tsc & node --experimental-json-modules build/deployCommands.js"
     },
     "repository": {
         "type": "git",
