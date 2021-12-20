@@ -1,20 +1,6 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
 import * as Discord from "discord.js";
 import { getOrCreatePlayer } from "../../commands/utility/youtube.js";
 import { logger } from "../../logger/logger.js";
-
-export const data = new SlashCommandBuilder()
-    .setName("youtube")
-    .setDescription("Youtube options")
-    .addStringOption((option) =>
-        option
-            .setName("option")
-            .setRequired(true)
-            .addChoice("Pause", "pause")
-            .addChoice("Stop", "stop")
-            .addChoice("Skip", "skip")
-            .addChoice("Resume", "resume")
-    );
 
 export const command = {
     async execute(interaction: Discord.CommandInteraction) {
@@ -23,7 +9,11 @@ export const command = {
             if (member instanceof Discord.GuildMember) {
                 const vc = member.voice.channel;
                 if (!(vc instanceof Discord.VoiceChannel)) {
-                    logger.log("info", "User is not in a voice channel.");
+                    logger.log("debug", "User is not in a voice channel.");
+                    await interaction.reply({
+                        content: "You are not in a voice channel.",
+                        ephemeral: true,
+                    });
                     return;
                 }
 
@@ -31,14 +21,12 @@ export const command = {
                 if (!player) {
                     return;
                 }
-                player.pause();
+                player.skip();
                 await interaction.reply({
-                    content: "Pausing the song",
+                    content: "Skipping the song.",
                     ephemeral: true,
                 });
             }
         }
-
-        //interaction.reply("Pong!");
     },
 };

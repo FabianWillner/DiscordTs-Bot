@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
-import { token, clientId } from "./credentials.json";
+import credentials from "./credentials.json";
 
 const commands = [];
 const commandFiles = fs
@@ -18,8 +18,8 @@ for (const file of commandFiles) {
 }
 
 const rest = new REST({ version: "9" });
-if (token !== null) {
-    rest.setToken(token);
+if (credentials.token !== null) {
+    rest.setToken(credentials.token);
 }
 
 (async () => {
@@ -27,7 +27,10 @@ if (token !== null) {
         console.log("Started refreshing application (/) commands.");
 
         await rest.put(
-            Routes.applicationGuildCommands(clientId, "348083864561909761"),
+            Routes.applicationGuildCommands(
+                credentials.clientId,
+                "348083864561909761"
+            ),
             //Routes.applicationCommands(clientId),
             { body: commands }
         );

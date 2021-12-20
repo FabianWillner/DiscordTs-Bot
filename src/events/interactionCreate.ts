@@ -6,8 +6,18 @@ export default {
     name: "interactionCreate",
     execute(interaction: Discord.Interaction) {
         if (interaction.isButton()) {
-            if (interaction.customId === "ping") {
-                interaction.reply("Pong!");
+            const command = slashcommands.get(interaction.customId);
+            if (!command) return;
+            try {
+                command.execute(interaction);
+            } catch (error) {
+                logger.log(
+                    "error",
+                    `the message ${interaction.customId} has thrown: ${error}`
+                );
+                interaction.reply(
+                    "there was an error trying to execute that command!"
+                );
             }
         } else if (interaction.isCommand()) {
             const command = slashcommands.get(interaction.commandName);

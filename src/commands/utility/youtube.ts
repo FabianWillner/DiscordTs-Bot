@@ -22,7 +22,7 @@ var opts: youtubeSearch.YouTubeSearchOptions = {
     key: credentials.youtubeApi,
 };
 
-const states: Discord.Collection<string, youtubePlayer> =
+const youtubePlayerCollection: Discord.Collection<string, youtubePlayer> =
     new Discord.Collection();
 
 class youtubePlayer {
@@ -182,17 +182,17 @@ class youtubePlayer {
     }
 }
 
-function getOrCreatePlayer(vc: Discord.VoiceChannel): youtubePlayer {
-    let player = states.get(vc.guildId);
+export function getOrCreatePlayer(vc: Discord.VoiceChannel): youtubePlayer {
+    let player = youtubePlayerCollection.get(vc.guildId);
 
     if (!player) {
         player = new youtubePlayer(vc);
         player.onConnectionDisconnect = () => {
             logger.log("info", "player is disconnected. Trying to kill player");
-            states.delete(vc.guildId);
+            youtubePlayerCollection.delete(vc.guildId);
             player = undefined;
         };
-        states.set(vc.guildId, player);
+        youtubePlayerCollection.set(vc.guildId, player);
     }
 
     return player;
@@ -222,7 +222,7 @@ export default {
         if (args.length === 1) {
             switch (args[0]) {
                 case "q": {
-                    const player = states.get(vc.guildId);
+                    const player = youtubePlayerCollection.get(vc.guildId);
 
                     if (!player) {
                         return;
@@ -230,9 +230,21 @@ export default {
 
                     const row = new MessageActionRow().addComponents(
                         new Discord.MessageButton()
-                            .setCustomId("ping")
+                            .setCustomId("youtubeStop")
+                            .setStyle("DANGER")
+                            .setEmoji("⏹"),
+                        new Discord.MessageButton()
+                            .setCustomId("youtubePause")
                             .setStyle("PRIMARY")
-                            .setEmoji("▶️")
+                            .setEmoji("⏸"),
+                        new Discord.MessageButton()
+                            .setCustomId("youtubePlay")
+                            .setStyle("PRIMARY")
+                            .setEmoji("▶️"),
+                        new Discord.MessageButton()
+                            .setCustomId("youtubeSkip")
+                            .setStyle("PRIMARY")
+                            .setEmoji("⏭")
                     );
 
                     message.reply({
@@ -249,7 +261,7 @@ export default {
                     break;
                 }
                 case "pause": {
-                    const player = states.get(vc.guildId);
+                    const player = youtubePlayerCollection.get(vc.guildId);
 
                     if (!player) {
                         return;
@@ -259,7 +271,7 @@ export default {
                     break;
                 }
                 case "resume": {
-                    const player = states.get(vc.guildId);
+                    const player = youtubePlayerCollection.get(vc.guildId);
 
                     if (!player) {
                         return;
@@ -269,7 +281,7 @@ export default {
                     break;
                 }
                 case "skip": {
-                    const player = states.get(vc.guildId);
+                    const player = youtubePlayerCollection.get(vc.guildId);
 
                     if (!player) {
                         return;
@@ -279,7 +291,7 @@ export default {
                     break;
                 }
                 case "stop": {
-                    const player = states.get(vc.guildId);
+                    const player = youtubePlayerCollection.get(vc.guildId);
 
                     if (!player) {
                         return;
