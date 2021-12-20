@@ -9,6 +9,7 @@ import {
     VoiceConnectionStatus,
     getVoiceConnection,
     VoiceConnection,
+    entersState,
 } from "@discordjs/voice";
 import credentials from "../../../credentials.json";
 import ytdl from "ytdl-core";
@@ -66,6 +67,32 @@ class youtubePlayer {
                     "Couldn't acquire a connection to the voice channel"
                 );
                 throw "Couldn't acquire a connection to the voice channel";
+            } else {
+                connection.on(
+                    VoiceConnectionStatus.Disconnected,
+                    async (oldState, newState) => {
+                        if (connection) {
+                            try {
+                                await Promise.race([
+                                    entersState(
+                                        connection,
+                                        VoiceConnectionStatus.Signalling,
+                                        5_000
+                                    ),
+                                    entersState(
+                                        connection,
+                                        VoiceConnectionStatus.Connecting,
+                                        5_000
+                                    ),
+                                ]);
+                                // Seems to be reconnecting to a new channel - ignore disconnect
+                            } catch (error) {
+                                // Seems to be a real disconnect which SHOULDN'T be recovered from
+                                connection.destroy();
+                            }
+                        }
+                    }
+                );
             }
         }
 
